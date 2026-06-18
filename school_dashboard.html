@@ -80,12 +80,7 @@
         border-bottom:1px solid var(--border);
     }
     .nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
-    .brand-icon {
-        width:32px; height:32px; border-radius:9px;
-        background:linear-gradient(135deg,#1A1814 0%,#1A1814 100%);
-        display:flex; align-items:center; justify-content:center;
-        box-shadow:0 0 16px rgba(26,24,20,0.07); flex-shrink:0;
-    }
+    .brand-logo { height: 36px; width: auto; display: block; flex-shrink: 0; }
     .brand-name { font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:800; letter-spacing:-0.3px; color:var(--text); }
     .brand-slash { color:var(--blue); font-weight:800; }
     .nav-role-chip {
@@ -383,13 +378,7 @@
 
     <nav>
         <div class="nav-brand">
-            <div class="brand-icon">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-                    <path d="M2 12c1.5 0 1.5-2 3-2s1.5 2 3 2 1.5-2 3-2 1.5 2 3 2 1.5-2 3-2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 17c1.5 0 1.5-2 3-2s1.5 2 3 2 1.5-2 3-2 1.5 2 3 2 1.5-2 3-2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 7c1.5 0 1.5-2 3-2s1.5 2 3 2 1.5-2 3-2 1.5 2 3 2 1.5-2 3-2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
+            <img src="atlas-logo.png" alt="Atlas" class="brand-logo">
             <span class="brand-name">ATLAS <span class="brand-slash">//</span></span>
             <div class="nav-role-chip">School Admin</div>
         </div>

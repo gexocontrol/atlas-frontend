@@ -45,8 +45,9 @@
             z-index: 50;
             background: rgba(244,241,234,0.85);
         }
-        .nav-logo { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.5px; }
+        .nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.1rem; letter-spacing: -0.5px; }
         .nav-logo span { color: var(--accent); }
+        .brand-logo { height: 36px; width: auto; display: block; flex-shrink: 0; }
         .backend-status {
             display: flex;
             align-items: center;
@@ -434,7 +435,7 @@
 <body>
 
 <nav>
-    <div class="nav-logo">ATLAS <span>//</span> Student Analyzer</div>
+    <div class="nav-logo"><img src="atlas-logo.png" alt="Atlas" class="brand-logo">ATLAS <span>//</span> Student Analyzer</div>
     <div class="backend-status" id="backend-status" style="display:none">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Connecting...</span>
