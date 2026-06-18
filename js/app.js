@@ -1,6 +1,6 @@
 // --- Core UI Element Selectors ---
 // Global scope loader fallback for standard browser environments
-const GEMINI_API_KEY = "AIzaSyA396KO9gNIR8qj1EZPdaCixm40q7Mh7ds";
+const GEMINI_API_KEY = ""; // Set via backend — do not hardcode keys here
 
 // Initialize the Google GenAI instance using the UMD bundle global object
 const ai = new google.genai.GoogleGenAI({ apiKey: GEMINI_API_KEY });
