@@ -1,0 +1,872 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas // Student Exam Analyzer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --bg: #F4F1EA;
+            --surface: #FFFFFF;
+            --surface-2: #F0EDE6;
+            --border: #E0DDD5;
+            --text: #1A1814;
+            --muted: #6B6560;
+            --accent: #1A1814;
+            --accent-glow: rgba(26,24,20,0.07);
+            --green: #1A1814;
+            --green-bg: rgba(26,24,20,0.06);
+            --red: #B91C1C;
+            --red-bg: rgba(185,28,28,0.08);
+            --yellow: #d29922;
+            --yellow-bg: rgba(210,153,34,0.1);
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(244,241,234,0.85);
+        }
+        .nav-logo { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.5px; }
+        .nav-logo span { color: var(--accent); }
+        .backend-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 7px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted);
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--muted);
+            flex-shrink: 0;
+        }
+        .status-dot.online { background: var(--green); box-shadow: 0 0 6px var(--green); }
+        .status-dot.offline { background: var(--red); }
+
+        /* ── MAIN LAYOUT ── */
+        main { max-width: 860px; margin: 0 auto; padding: 48px 24px; }
+
+        .hero { text-align: center; margin-bottom: 48px; }
+        .hero h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.15;
+            margin-bottom: 12px;
+        }
+        .hero h1 em { font-style: normal; color: var(--accent); }
+        .hero p { color: var(--muted); font-size: 1rem; max-width: 500px; margin: 0 auto; }
+
+        /* ── UPLOAD CARD ── */
+        .upload-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        .fields-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .field { display: flex; flex-direction: column; gap: 6px; }
+        .field label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--muted); }
+        .field input, .field select {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .field input:focus, .field select:focus { border-color: var(--accent); }
+        .field select option { background: var(--surface-2); }
+
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 48px 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+        .drop-icon { font-size: 2.5rem; margin-bottom: 12px; }
+        .drop-zone h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+        .drop-zone p { font-size: 0.85rem; color: var(--muted); margin-bottom: 18px; }
+        .btn-upload {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.875rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            pointer-events: all;
+            position: relative;
+            z-index: 2;
+        }
+        .btn-upload:hover { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
+        .file-selected {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            background: var(--green-bg);
+            border: 1px solid var(--green);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            color: var(--green);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .btn-analyze {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        .btn-analyze:hover { opacity: 0.9; }
+        .btn-analyze:active { transform: scale(0.99); }
+        .btn-analyze:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* ── PROGRESS ── */
+        #progress-section { display: none; margin-bottom: 24px; }
+        .progress-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+        }
+        .progress-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; }
+        .progress-bar-track {
+            background: var(--surface-2);
+            border-radius: 99px;
+            height: 6px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 99px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .progress-status { font-size: 0.8rem; color: var(--muted); font-family: monospace; }
+
+        /* ── RESULTS ── */
+        #results-section { display: none; }
+
+        .score-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            margin-bottom: 20px;
+        }
+        .score-ring {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 5px solid;
+            flex-shrink: 0;
+        }
+        .score-ring .score-num { font-size: 2rem; font-weight: 800; }
+        .score-ring .score-pct { font-size: 0.75rem; color: var(--muted); }
+        .score-info h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
+        .score-info .subject-badge {
+            display: inline-block;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 99px;
+            padding: 3px 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .score-info .summary { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+        .grade-badge {
+            font-size: 2rem;
+            font-weight: 900;
+            padding: 8px 20px;
+            border-radius: 8px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        /* ── TABS ── */
+        .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+        .tab-btn {
+            padding: 8px 18px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--muted);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.15s;
+        }
+        .tab-btn:hover { color: var(--text); border-color: var(--accent); }
+        .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── CHIPS ── */
+        .chips-section { margin-bottom: 20px; }
+        .chips-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 99px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .chip-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(26,24,20,0.06); }
+        .chip-red { background: var(--red-bg); color: var(--red); border: 1px solid rgba(185,28,28,0.08); }
+
+        /* ── QUESTION CARDS ── */
+        .question-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .q-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .q-header:hover { background: var(--surface-2); }
+        .q-left { display: flex; align-items: center; gap: 14px; }
+        .q-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .q-topic { font-weight: 600; font-size: 0.9rem; }
+        .q-subtopic { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+        .q-marks { font-size: 0.85rem; font-weight: 700; white-space: nowrap; }
+        .q-chevron { color: var(--muted); transition: transform 0.2s; font-size: 0.8rem; }
+        .q-header.open .q-chevron { transform: rotate(180deg); }
+
+        .q-body { display: none; padding: 0 20px 20px; }
+        .q-body.open { display: block; }
+
+        .q-section { margin-bottom: 16px; }
+        .q-section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+        .q-section-text {
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--surface-2);
+            border-radius: 8px;
+            padding: 12px 14px;
+        }
+        .mistake-list { list-style: none; }
+        .mistake-list li {
+            font-size: 0.875rem;
+            color: var(--red);
+            padding: 5px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+        .mistake-list li::before { content: "✕"; position: absolute; left: 0; font-size: 0.75rem; }
+        .feedback-box {
+            background: var(--accent-glow);
+            border: 1px solid rgba(26,24,20,0.07);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: #4A4541;
+        }
+
+        /* ── STUDY PLAN ── */
+        .study-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .priority-badge {
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .priority-high { background: var(--red-bg); color: var(--red); border: 1px solid rgba(185,28,28,0.08); }
+        .priority-medium { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(210,153,34,0.3); }
+        .priority-low { background: var(--green-bg); color: var(--green); border: 1px solid rgba(26,24,20,0.06); }
+        .study-topic { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+        .study-action { font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
+        .study-time { font-size: 0.75rem; color: var(--accent); font-weight: 600; }
+
+        /* ── ENCOURAGEMENT ── */
+        .encouragement-card {
+            background: linear-gradient(135deg, rgba(26,24,20,0.07), rgba(26,24,20,0.07));
+            border: 1px solid rgba(26,24,20,0.07);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            margin-top: 16px;
+        }
+        .encouragement-card p { font-size: 0.95rem; line-height: 1.7; color: #4A4541; }
+
+        /* ── ACTIONS ── */
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .btn-secondary {
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .fields-row { grid-template-columns: 1fr; }
+            .score-card { flex-direction: column; text-align: center; }
+            .grade-badge { margin-left: 0; }
+            .hero h1 { font-size: 1.7rem; }
+            nav { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(244,241,234,0.98); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-logo">ATLAS <span>//</span> Student Analyzer</div>
+    <div class="backend-status" id="backend-status" style="display:none">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-text">Connecting...</span>
+    </div>
+</nav>
+
+<main>
+    <div class="hero">
+        <h1>Understand your <em>mistakes.</em><br>Improve your score.</h1>
+        <p>Upload your exam PDF — Atlas AI analyzes every answer, finds mistakes, and builds you a personal study plan.</p>
+    </div>
+
+    <!-- Upload Card -->
+    <div class="upload-card">
+        <div class="fields-row">
+            <div class="field">
+                <label>Your Name</label>
+                <input type="text" id="student-name" placeholder="e.g. Ahmed Ali">
+            </div>
+            <div class="field">
+                <label>Subject</label>
+                <select id="subject">
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Biology">Biology</option>
+                    <option value="English Language">English Language</option>
+                    <option value="English Literature">English Literature</option>
+                    <option value="History">History</option>
+                    <option value="Geography">Geography</option>
+                    <option value="Economics">Economics</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Arabic">Arabic</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <input type="file" id="pdf-input" accept="application/pdf" style="display:none">
+        <div class="drop-zone" id="drop-zone">
+            <div class="drop-icon">📄</div>
+            <h3>Drop your exam PDF here</h3>
+            <p>Typed and handwritten exams both work</p>
+            <button class="btn-upload" onclick="document.getElementById('pdf-input').click()">
+                📎 Choose PDF File
+            </button>
+        </div>
+
+        <div class="file-selected" id="file-selected">
+            <span>✓</span>
+            <span id="file-name-display"></span>
+        </div>
+
+        <div id="error-banner" style="display:none; background:var(--red-bg); border:1px solid var(--red); border-radius:8px; padding:12px 16px; margin-bottom:16px; color:var(--red); font-size:0.875rem; font-weight:600;"></div>
+
+        <button class="btn-analyze" id="analyze-btn" onclick="runAnalysis()">
+            Analyze My Exam
+        </button>
+    </div>
+
+    <!-- Progress -->
+    <div id="progress-section">
+        <div class="progress-card">
+            <div class="progress-label" id="progress-label">Preparing...</div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-status" id="progress-status">Initializing AI...</div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results-section">
+
+        <!-- Score Card -->
+        <div class="score-card" id="score-card">
+            <div class="score-ring" id="score-ring">
+                <span class="score-num" id="score-num">—</span>
+                <span class="score-pct">/ 100</span>
+            </div>
+            <div class="score-info">
+                <div class="subject-badge" id="result-subject">Subject</div>
+                <h2 id="result-name">Student</h2>
+                <p class="summary" id="result-summary"></p>
+            </div>
+            <div class="grade-badge" id="grade-badge">—</div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('overview', this)">Overview</button>
+            <button class="tab-btn" onclick="switchTab('questions', this)">Questions</button>
+            <button class="tab-btn" onclick="switchTab('study-plan', this)">Study Plan</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div class="tab-panel active" id="tab-overview">
+            <div class="chips-section">
+                <div class="chips-label">✅ Strengths</div>
+                <div class="chips" id="strengths-chips"></div>
+            </div>
+            <div class="chips-section">
+                <div class="chips-label">⚠️ Areas to Improve</div>
+                <div class="chips" id="weaknesses-chips"></div>
+            </div>
+            <div class="encouragement-card" id="encouragement-card">
+                <p id="encouragement-text"></p>
+            </div>
+        </div>
+
+        <!-- Questions Tab -->
+        <div class="tab-panel" id="tab-questions">
+            <div id="questions-list"></div>
+        </div>
+
+        <!-- Study Plan Tab -->
+        <div class="tab-panel" id="tab-study-plan">
+            <div id="study-plan-list"></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="action-bar">
+            <button class="btn-secondary" onclick="downloadPDF()">📥 Download Report PDF</button>
+            <button class="btn-secondary" onclick="resetAll()">↩ Analyze Another Exam</button>
+        </div>
+    </div>
+</main>
+
+<script>
+    // ── Config — change this to your deployed backend URL in production ──
+    const BACKEND_URL = 'https://web-production-6f8843.up.railway.app';
+
+    let currentAnalysis = null;
+    let selectedFile = null;
+
+    // ── Backend health check ──
+    async function checkBackend() {
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/health`, { signal: AbortSignal.timeout(3000) });
+            if (res.ok) {
+                document.getElementById('status-dot').className = 'status-dot online';
+                document.getElementById('status-text').textContent = 'Backend online';
+            } else {
+                throw new Error();
+            }
+        } catch {
+            document.getElementById('status-dot').className = 'status-dot offline';
+            document.getElementById('status-text').textContent = 'Backend offline';
+        }
+    }
+    window.addEventListener('DOMContentLoaded', checkBackend);
+
+    // ── File selection ──
+    const dropZone = document.getElementById('drop-zone');
+    const pdfInput = document.getElementById('pdf-input');
+
+    pdfInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const f = e.dataTransfer.files[0];
+        if (f && f.type === 'application/pdf') handleFile(f);
+        else showError('Please drop a PDF file.');
+    });
+    dropZone.addEventListener('click', (e) => {
+        if (!e.target.closest('.btn-upload')) pdfInput.click();
+    });
+
+    function handleFile(file) {
+        if (!file) return;
+        selectedFile = file;
+        document.getElementById('file-name-display').textContent = file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)';
+        document.getElementById('file-selected').style.display = 'flex';
+        dropZone.querySelector('h3').textContent = 'PDF ready';
+        dropZone.querySelector('p').textContent = file.name;
+    }
+
+    // ── UI helpers ──
+    function setProgress(pct, label, status) {
+        document.getElementById('progress-fill').style.width = pct + '%';
+        document.getElementById('progress-label').textContent = label;
+        document.getElementById('progress-status').textContent = status;
+    }
+    function showError(msg) {
+        const b = document.getElementById('error-banner');
+        b.textContent = '⚠ ' + msg;
+        b.style.display = 'block';
+    }
+    function hideError() {
+        document.getElementById('error-banner').style.display = 'none';
+    }
+
+    // ── Core: send PDF to Flask backend, backend calls Gemini ──
+    async function runAnalysis() {
+        hideError();
+        document.getElementById('analyze-btn').disabled = true;
+        document.getElementById('progress-section').style.display = 'block';
+        document.getElementById('results-section').style.display = 'none';
+
+        try {
+            if (!selectedFile) throw new Error('Please select a PDF file first.');
+
+            const studentName = document.getElementById('student-name').value.trim() || 'Student';
+            const subject = document.getElementById('subject').value;
+
+            setProgress(10, 'Uploading PDF...', 'Sending your exam to the Atlas backend...');
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('student_name', studentName);
+            formData.append('subject', subject);
+
+            setProgress(30, 'Atlas is analyzing...', 'AI is reading and evaluating your exam — this takes 15–30 seconds...');
+
+            const response = await fetch(`${BACKEND_URL}/api/analyze/pdf-exam`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || `Server error (${response.status})`);
+            }
+            if (!data.success) {
+                throw new Error(data.error || 'Analysis failed. Please try again.');
+            }
+
+            setProgress(95, 'Almost done...', 'Preparing your results...');
+
+            currentAnalysis = data.analysis;
+            setProgress(100, 'Done!', 'Analysis complete.');
+
+            setTimeout(() => {
+                document.getElementById('progress-section').style.display = 'none';
+                renderResults(data.analysis);
+            }, 400);
+
+        } catch (err) {
+            document.getElementById('progress-section').style.display = 'none';
+            document.getElementById('analyze-btn').disabled = false;
+            showError(err.message);
+        }
+    }
+
+    // ── Render results ──
+    function renderResults(a) {
+        const score = a.overall_score ?? 0;
+        const grade = a.grade ?? '—';
+
+        // Score ring color
+        const ring = document.getElementById('score-ring');
+        const color = score >= 70 ? '#1A1814' : score >= 50 ? '#d29922' : '#B91C1C';
+        ring.style.borderColor = color;
+        ring.style.color = color;
+        document.getElementById('score-num').textContent = score;
+
+        // Grade badge color
+        const gb = document.getElementById('grade-badge');
+        gb.textContent = grade;
+        gb.style.background = score >= 70 ? 'rgba(26,24,20,0.06)' : score >= 50 ? 'rgba(210,153,34,0.15)' : 'rgba(185,28,28,0.08)';
+        gb.style.color = color;
+
+        document.getElementById('result-subject').textContent = a.subject ?? '';
+        document.getElementById('result-name').textContent = a.student_name ?? '';
+        document.getElementById('result-summary').textContent = a.summary ?? '';
+
+        // Strengths & weaknesses
+        const sc = document.getElementById('strengths-chips');
+        sc.innerHTML = (a.strengths ?? []).map(s => `<span class="chip chip-green">✓ ${s}</span>`).join('');
+
+        const wc = document.getElementById('weaknesses-chips');
+        wc.innerHTML = (a.weaknesses ?? []).map(w => `<span class="chip chip-red">↑ ${w}</span>`).join('');
+
+        document.getElementById('encouragement-text').textContent = a.encouragement ?? '';
+
+        // Questions
+        const ql = document.getElementById('questions-list');
+        ql.innerHTML = '';
+        (a.questions ?? []).forEach((q, idx) => {
+            const marksColor = (q.marks_awarded >= q.marks_available * 0.7) ? '#1A1814' :
+                               (q.marks_awarded >= q.marks_available * 0.4) ? '#d29922' : '#B91C1C';
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <div class="q-header" onclick="toggleQ(this)">
+                    <div class="q-left">
+                        <div class="q-num" style="background:${marksColor}22;color:${marksColor}">${q.question_number}</div>
+                        <div>
+                            <div class="q-topic">Q${q.question_number}: ${q.topic ?? 'Question'}</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:12px">
+                        <span class="q-marks" style="color:${marksColor}">${q.marks_awarded ?? '?'} / ${q.marks_available ?? '?'} marks</span>
+                        <span class="q-chevron">▼</span>
+                    </div>
+                </div>
+                <div class="q-body">
+                    ${q.student_answer_summary ? `
+                    <div class="q-section">
+                        <div class="q-section-label">Student's Answer</div>
+                        <div class="q-section-text">${q.student_answer_summary}</div>
+                    </div>` : ''}
+                    ${q.correct_approach ? `
+                    <div class="q-section">
+                        <div class="q-section-label">Correct Approach</div>
+                        <div class="q-section-text">${q.correct_approach}</div>
+                    </div>` : ''}
+                    ${q.mistakes && q.mistakes.length ? `
+                    <div class="q-section">
+                        <div class="q-section-label">Mistakes Made</div>
+                        <ul class="mistake-list">${q.mistakes.map(m => `<li>${m}</li>`).join('')}</ul>
+                    </div>` : ''}
+                    ${q.feedback ? `
+                    <div class="q-section">
+                        <div class="q-section-label">Feedback</div>
+                        <div class="feedback-box">${q.feedback}</div>
+                    </div>` : ''}
+                </div>
+            `;
+            ql.appendChild(card);
+        });
+
+        // Study plan
+        const sp = document.getElementById('study-plan-list');
+        sp.innerHTML = '';
+        (a.study_plan ?? []).forEach(item => {
+            const cls = item.priority === 'High' ? 'priority-high' : item.priority === 'Medium' ? 'priority-medium' : 'priority-low';
+            const div = document.createElement('div');
+            div.className = 'study-item';
+            div.innerHTML = `
+                <span class="priority-badge ${cls}">${item.priority}</span>
+                <div>
+                    <div class="study-topic">${item.topic}</div>
+                    <div class="study-action">${item.action}</div>
+                    <div class="study-time">⏱ ${item.time_estimate}</div>
+                </div>
+            `;
+            sp.appendChild(div);
+        });
+
+        document.getElementById('results-section').style.display = 'block';
+        document.getElementById('analyze-btn').disabled = false;
+        document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function toggleQ(header) {
+        header.classList.toggle('open');
+        header.nextElementSibling.classList.toggle('open');
+    }
+
+    function switchTab(name, btn) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function resetAll() {
+        selectedFile = null;
+        currentAnalysis = null;
+        document.getElementById('pdf-input').value = '';
+        document.getElementById('file-selected').style.display = 'none';
+        document.getElementById('results-section').style.display = 'none';
+        document.getElementById('progress-section').style.display = 'none';
+        dropZone.querySelector('h3').textContent = 'Drop your exam PDF here';
+        dropZone.querySelector('p').textContent = 'Typed and handwritten exams both work';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ── PDF Report ──
+    async function downloadPDF() {
+        if (!currentAnalysis) return;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const a = currentAnalysis;
+        let y = 20;
+
+        const write = (text, size, bold, color) => {
+            doc.setFontSize(size || 11);
+            doc.setFont('helvetica', bold ? 'bold' : 'normal');
+            if (color) doc.setTextColor(...color);
+            else doc.setTextColor(30, 30, 30);
+            const lines = doc.splitTextToSize(String(text), 170);
+            lines.forEach(line => {
+                if (y > 275) { doc.addPage(); y = 20; }
+                doc.text(line, 20, y);
+                y += (size || 11) * 0.45;
+            });
+            y += 2;
+        };
+
+        write('ATLAS — Exam Analysis Report', 18, true, [37, 99, 235]);
+        y += 2;
+        write(`Student: ${a.student_name}   |   Subject: ${a.subject}   |   Score: ${a.overall_score}/100 (${a.grade})`, 11, false, [80, 80, 80]);
+        y += 4;
+        write('Summary', 13, true);
+        write(a.summary, 11);
+        y += 4;
+
+        write('Strengths', 13, true, [0, 128, 0]);
+        (a.strengths || []).forEach(s => write('✓  ' + s, 10));
+        y += 2;
+        write('Areas to Improve', 13, true, [200, 50, 50]);
+        (a.weaknesses || []).forEach(w => write('↑  ' + w, 10));
+        y += 4;
+
+        write('Question-by-Question Breakdown', 14, true);
+        (a.questions || []).forEach(q => {
+            y += 3;
+            write(`Q${q.question_number}: ${q.topic}   [${q.marks_awarded}/${q.marks_available} marks]`, 11, true);
+            if (q.feedback) write(q.feedback, 10, false, [60, 60, 60]);
+            (q.mistakes || []).forEach(m => write('  ✕ ' + m, 9, false, [180, 50, 50]));
+        });
+        y += 4;
+
+        write('Study Plan', 14, true);
+        (a.study_plan || []).forEach(item => {
+            y += 2;
+            write(`[${item.priority}] ${item.topic} — ${item.time_estimate}`, 10, true);
+            write(item.action, 9, false, [60, 60, 60]);
+        });
+        y += 4;
+
+        write('A Message for You', 13, true, [37, 99, 235]);
+        write(a.encouragement, 11, false, [60, 80, 120]);
+
+        doc.save(`Atlas-Exam-Report-${a.student_name.replace(/\s+/g, '-')}.pdf`);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,758 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas // Create Exam</title>
+    <style>
+        :root {
+            --bg:        #F4F1EA;
+            --surface:   #FFFFFF;
+            --surface-2: #F0EDE6;
+            --border:    #E0DDD5;
+            --text:      #1A1814;
+            --muted:     #6B6560;
+            --accent:    #1A1814;
+            --accent-glow: rgba(26,24,20,0.07);
+            --green:     #1A1814;
+            --green-bg:  rgba(26,24,20,0.06);
+            --red:       #B91C1C;
+            --red-bg:    rgba(185,28,28,0.08);
+            --radius:    12px;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0; z-index: 50;
+            background: rgba(244,241,234,0.9);
+            backdrop-filter: blur(8px);
+        }
+        .nav-left { display: flex; align-items: center; gap: 16px; }
+        .nav-logo { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.5px; }
+        .nav-logo span { color: var(--accent); }
+        .nav-back {
+            display: flex; align-items: center; gap: 6px;
+            color: var(--muted); font-size: 0.82rem; font-weight: 600;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .nav-back:hover { color: var(--text); border-color: var(--accent); }
+        .backend-status {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; padding: 7px 14px;
+            font-size: 0.8rem; font-weight: 600; color: var(--muted);
+        }
+        .status-dot { width:8px; height:8px; border-radius:50%; background:var(--muted); flex-shrink:0; }
+        .status-dot.online  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+        .status-dot.offline { background: var(--red); }
+
+        /* ── MAIN ── */
+        main { max-width: 860px; margin: 0 auto; padding: 48px 24px; }
+
+        .hero { text-align: center; margin-bottom: 48px; }
+        .hero h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 12px; }
+        .hero h1 em { font-style: normal; color: var(--accent); }
+        .hero p { color: var(--muted); font-size: 1rem; max-width: 520px; margin: 0 auto; }
+
+        /* ── UPLOAD CARD ── */
+        .upload-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* ── SECTION LABEL ── */
+        .ctrl-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        /* ── SEGMENTED CONTROL ── */
+        .seg-wrap { display: flex; flex-direction: column; }
+        .seg-control {
+            display: flex;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 3px;
+            gap: 3px;
+        }
+        .seg-btn {
+            flex: 1;
+            padding: 9px 8px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.18s, color 0.18s, border-color 0.18s;
+            white-space: nowrap;
+            text-align: center;
+        }
+        .seg-btn:hover { color: var(--text); background: rgba(26,24,20,0.04); }
+        .seg-btn.active {
+            background: var(--surface);
+            color: var(--accent);
+            border-color: rgba(26,24,20,0.07);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+        }
+
+        /* ── SUBJECT SELECT ── */
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .field { display: flex; flex-direction: column; gap: 6px; }
+        .field-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); }
+        .field select {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .field select:focus { border-color: var(--accent); }
+        .field select option { background: var(--surface-2); }
+
+        /* ── PAGES SLIDER ── */
+        .slider-wrap {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .pages-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 5px;
+            border-radius: 99px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            outline: none;
+            cursor: pointer;
+        }
+        .pages-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(26,24,20,0.07);
+            transition: transform 0.15s;
+        }
+        .pages-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        .pages-slider::-moz-range-thumb {
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: none;
+        }
+        .pages-display {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--accent);
+            min-width: 72px;
+            text-align: center;
+            background: rgba(26,24,20,0.07);
+            border: 1px solid rgba(26,24,20,0.07);
+            border-radius: 8px;
+            padding: 7px 12px;
+            font-family: monospace;
+        }
+        .slider-range-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+
+        /* ── DROP ZONE ── */
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 44px 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+        .drop-icon { font-size: 2.5rem; margin-bottom: 12px; }
+        .drop-zone h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+        .drop-zone p { font-size: 0.85rem; color: var(--muted); margin-bottom: 18px; }
+        .btn-upload {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 22px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.875rem; font-weight: 700;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            position: relative; z-index: 2;
+        }
+        .btn-upload:hover { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
+        .file-selected {
+            display: none; align-items: center; gap: 12px;
+            background: var(--green-bg);
+            border: 1px solid var(--green);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--green); font-weight: 600; font-size: 0.9rem;
+        }
+
+        /* ── ERROR ── */
+        #error-banner {
+            display: none;
+            background: var(--red-bg); border: 1px solid var(--red);
+            border-radius: 8px; padding: 12px 16px;
+            color: var(--red); font-size: 0.875rem; font-weight: 600;
+        }
+
+        /* ── GENERATE BUTTON ── */
+        .btn-action {
+            width: 100%; padding: 15px;
+            background: var(--accent);
+            color: #F4F1EA;
+            border: none; border-radius: var(--radius);
+            font-size: 0.95rem; font-weight: 800;
+            letter-spacing: 0.5px; text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        .btn-action:hover { opacity: 0.88; }
+        .btn-action:active { transform: scale(0.99); }
+        .btn-action:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        /* ── PROGRESS ── */
+        #progress-section { display: none; margin-bottom: 24px; }
+        .progress-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 24px 28px;
+        }
+        .progress-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; }
+        .progress-bar-track {
+            background: var(--surface-2); border-radius: 99px;
+            height: 6px; overflow: hidden; margin-bottom: 12px;
+        }
+        .progress-bar-fill {
+            height: 100%; background: var(--accent);
+            border-radius: 99px; width: 0%; transition: width 0.4s ease;
+        }
+        .progress-status { font-size: 0.8rem; color: var(--muted); font-family: monospace; }
+
+        /* ── RESULTS ── */
+        #results-section { display: none; }
+
+        .result-meta-bar {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 20px 28px;
+            margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 12px;
+        }
+        .result-meta-bar h2 { font-size: 1.1rem; font-weight: 700; }
+        .meta-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+        .meta-tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid rgba(26,24,20,0.07);
+            border-radius: 99px; padding: 3px 12px;
+            font-size: 0.75rem; font-weight: 700;
+        }
+
+        /* ── QUESTION CARDS ── */
+        .question-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); margin-bottom: 12px; overflow: hidden;
+        }
+        .q-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; cursor: pointer; transition: background 0.15s;
+        }
+        .q-header:hover { background: var(--surface-2); }
+        .q-left { display: flex; align-items: center; gap: 14px; }
+        .q-num {
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; font-weight: 700; flex-shrink: 0;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid rgba(26,24,20,0.07);
+        }
+        .q-type-badge {
+            font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.3px; padding: 2px 8px; border-radius: 5px;
+            background: var(--surface-2); color: var(--muted);
+            border: 1px solid var(--border); white-space: nowrap;
+        }
+        .q-text { font-weight: 600; font-size: 0.9rem; margin-top: 3px; line-height: 1.4; }
+        .q-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; margin-left: 12px; }
+        .q-marks { font-size: 0.82rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
+        .q-chevron { color: var(--muted); transition: transform 0.2s; font-size: 0.75rem; }
+        .q-header.open .q-chevron { transform: rotate(180deg); }
+
+        .q-body { display: none; padding: 0 20px 20px; }
+        .q-body.open { display: block; }
+        .q-section { margin-bottom: 14px; }
+        .q-section-label {
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+            color: var(--muted); margin-bottom: 6px; letter-spacing: 0.5px;
+        }
+        .q-section-text {
+            font-size: 0.875rem; line-height: 1.65; color: var(--text);
+            background: var(--surface-2); border-radius: 8px; padding: 12px 14px;
+        }
+        .options-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+        .options-list li {
+            font-size: 0.875rem; padding: 8px 12px;
+            border-radius: 8px; background: var(--surface-2);
+            border: 1px solid var(--border);
+        }
+        .options-list li.correct {
+            border-color: rgba(26,24,20,0.07);
+            background: rgba(26,24,20,0.07);
+            color: var(--accent); font-weight: 600;
+        }
+        .answer-box {
+            background: rgba(26,24,20,0.07);
+            border: 1px solid rgba(26,24,20,0.07);
+            border-radius: 8px; padding: 12px 14px;
+            font-size: 0.875rem; line-height: 1.65; color: var(--accent);
+        }
+
+        .action-bar { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+        .btn-secondary {
+            padding: 10px 20px;
+            border: 1px solid var(--border); background: var(--surface);
+            color: var(--text); border-radius: 8px;
+            font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; transition: border-color 0.2s;
+        }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+        @media (max-width: 600px) {
+            body { overflow-x: hidden; }
+
+            nav { padding: 12px 16px; }
+            .nav-logo { font-size: 0.95rem; }
+
+            main { padding: 28px 16px; }
+
+            .hero { margin-bottom: 28px; }
+            .hero h1 { font-size: 1.6rem; }
+            .hero p { font-size: 0.9rem; }
+
+            .upload-card { padding: 20px 16px; gap: 20px; }
+
+            .field-row { grid-template-columns: 1fr; }
+
+            /* Segmented controls: 2 buttons per row */
+            .seg-control { flex-wrap: wrap; }
+            .seg-btn {
+                flex: 0 0 calc(50% - 2px);
+                font-size: 0.8rem;
+                padding: 9px 6px;
+                white-space: normal;
+                line-height: 1.2;
+                text-align: center;
+            }
+
+            .drop-zone { padding: 28px 16px; }
+
+            .result-meta-bar { flex-direction: column; align-items: flex-start; }
+
+            .q-header { padding: 14px 14px; }
+            .q-body { padding: 0 14px 16px; }
+            .q-text { font-size: 0.85rem; }
+            nav { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(244,241,234,0.98); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-left">
+        <div class="nav-logo">ATLAS <span>//</span> Create Exam</div>
+        <a class="nav-back" href="teacher_dashboard.html">← Dashboard</a>
+    </div>
+    <div class="backend-status" id="backend-status" style="display:none">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-text">Connecting...</span>
+    </div>
+</nav>
+
+<main>
+    <div class="hero">
+        <h1>Generate a <em>practice exam</em> from your material.</h1>
+        <p>Upload your subject PDF, configure the exam settings, and Atlas AI builds a complete exam with a mark scheme.</p>
+    </div>
+
+    <div class="upload-card">
+
+        <!-- Subject -->
+        <div class="field-row">
+            <div class="field">
+                <div class="field-label">Subject</div>
+                <select id="subject">
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Biology">Biology</option>
+                    <option value="English Language">English Language</option>
+                    <option value="English Literature">English Literature</option>
+                    <option value="History">History</option>
+                    <option value="Geography">Geography</option>
+                    <option value="Economics">Economics</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Arabic">Arabic</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Difficulty -->
+        <div class="seg-wrap">
+            <div class="ctrl-label">Difficulty Level</div>
+            <div class="seg-control" id="difficulty-ctrl">
+                <button class="seg-btn active" data-value="Easy"   onclick="selectSeg('difficulty-ctrl', this)">Easy</button>
+                <button class="seg-btn"         data-value="Medium" onclick="selectSeg('difficulty-ctrl', this)">Medium</button>
+                <button class="seg-btn"         data-value="Hard"   onclick="selectSeg('difficulty-ctrl', this)">Hard</button>
+                <button class="seg-btn"         data-value="Expert" onclick="selectSeg('difficulty-ctrl', this)">Expert</button>
+            </div>
+        </div>
+
+        <!-- Exam Type -->
+        <div class="seg-wrap">
+            <div class="ctrl-label">Exam Type</div>
+            <div class="seg-control" id="examtype-ctrl">
+                <button class="seg-btn active" data-value="Multiple Choice"       onclick="selectSeg('examtype-ctrl', this)">Multiple Choice</button>
+                <button class="seg-btn"         data-value="Explain &amp; Essay"  onclick="selectSeg('examtype-ctrl', this)">Explain &amp; Essay</button>
+                <button class="seg-btn"         data-value="Practical to Theory"  onclick="selectSeg('examtype-ctrl', this)">Practical to Theory</button>
+                <button class="seg-btn"         data-value="Mixed"                onclick="selectSeg('examtype-ctrl', this)">Mixed</button>
+            </div>
+        </div>
+
+        <!-- Number of Pages -->
+        <div>
+            <div class="ctrl-label">Number of Pages</div>
+            <div class="slider-wrap">
+                <input type="range" class="pages-slider" id="num-pages"
+                       min="2" max="13" value="5"
+                       oninput="updatePagesDisplay(this.value)">
+                <div class="pages-display" id="pages-display">5 pages</div>
+            </div>
+            <div class="slider-range-labels">
+                <span>2 pages (short)</span>
+                <span>13 pages (full exam)</span>
+            </div>
+        </div>
+
+        <!-- File Upload -->
+        <div>
+            <div class="ctrl-label">Upload Subject Material</div>
+            <input type="file" id="pdf-input" accept="application/pdf" style="display:none">
+            <div class="drop-zone" id="drop-zone">
+                <div class="drop-icon">📚</div>
+                <h3>Drop your PDF here</h3>
+                <p>Syllabus notes, textbook chapters, revision guides</p>
+                <button class="btn-upload" onclick="document.getElementById('pdf-input').click()">
+                    📎 Choose PDF File
+                </button>
+            </div>
+            <div class="file-selected" id="file-selected">
+                <span>✓</span>
+                <span id="file-name-display"></span>
+            </div>
+        </div>
+
+        <div id="error-banner"></div>
+
+        <button class="btn-action" id="generate-btn" onclick="runGenerate()">
+            ✦ Generate Exam
+        </button>
+
+    </div>
+
+    <!-- Progress -->
+    <div id="progress-section">
+        <div class="progress-card">
+            <div class="progress-label" id="progress-label">Preparing...</div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-status" id="progress-status">Initializing AI...</div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results-section">
+
+        <div class="result-meta-bar">
+            <h2 id="result-heading">Generated Exam</h2>
+            <div class="meta-tags" id="result-tags"></div>
+        </div>
+
+        <div id="questions-list"></div>
+
+        <div class="action-bar">
+            <button class="btn-secondary" onclick="resetAll()">↩ Generate Another Exam</button>
+        </div>
+
+    </div>
+</main>
+
+<script>
+    const BACKEND_URL = 'https://web-production-6f8843.up.railway.app';
+    let selectedFile = null;
+
+    async function checkBackend() {
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/health`, { signal: AbortSignal.timeout(3000) });
+            if (res.ok) {
+                document.getElementById('status-dot').className = 'status-dot online';
+                document.getElementById('status-text').textContent = 'Backend online';
+            } else { throw new Error(); }
+        } catch {
+            document.getElementById('status-dot').className = 'status-dot offline';
+            document.getElementById('status-text').textContent = 'Backend offline';
+        }
+    }
+    window.addEventListener('DOMContentLoaded', checkBackend);
+
+    /* ── Segmented controls ── */
+    function selectSeg(ctrlId, btn) {
+        document.querySelectorAll('#' + ctrlId + ' .seg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+    function getSegValue(ctrlId) {
+        const active = document.querySelector('#' + ctrlId + ' .seg-btn.active');
+        return active ? active.dataset.value : '';
+    }
+
+    /* ── Slider ── */
+    function updatePagesDisplay(val) {
+        document.getElementById('pages-display').textContent = val + ' page' + (val == 1 ? '' : 's');
+    }
+
+    /* ── File drop ── */
+    const dropZone = document.getElementById('drop-zone');
+    const pdfInput = document.getElementById('pdf-input');
+
+    pdfInput.addEventListener('change', e => handleFile(e.target.files[0]));
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault(); dropZone.classList.remove('drag-over');
+        const f = e.dataTransfer.files[0];
+        if (f && f.type === 'application/pdf') handleFile(f);
+        else showError('Please drop a PDF file.');
+    });
+    dropZone.addEventListener('click', e => {
+        if (!e.target.closest('.btn-upload')) pdfInput.click();
+    });
+
+    function handleFile(file) {
+        if (!file) return;
+        selectedFile = file;
+        document.getElementById('file-name-display').textContent = file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)';
+        document.getElementById('file-selected').style.display = 'flex';
+        dropZone.querySelector('h3').textContent = 'PDF ready';
+        dropZone.querySelector('p').textContent = file.name;
+        hideError();
+    }
+
+    /* ── Helpers ── */
+    function setProgress(pct, label, status) {
+        document.getElementById('progress-fill').style.width = pct + '%';
+        document.getElementById('progress-label').textContent = label;
+        document.getElementById('progress-status').textContent = status;
+    }
+    function showError(msg) {
+        const b = document.getElementById('error-banner');
+        b.textContent = '⚠ ' + msg;
+        b.style.display = 'block';
+    }
+    function hideError() {
+        document.getElementById('error-banner').style.display = 'none';
+    }
+
+    /* ── Generate ── */
+    async function runGenerate() {
+        hideError();
+        if (!selectedFile) { showError('Please upload a PDF file first.'); return; }
+
+        const subject    = document.getElementById('subject').value;
+        const difficulty = getSegValue('difficulty-ctrl');
+        const examType   = getSegValue('examtype-ctrl');
+        const numPages   = document.getElementById('num-pages').value;
+
+        document.getElementById('generate-btn').disabled = true;
+        document.getElementById('progress-section').style.display = 'block';
+        document.getElementById('results-section').style.display = 'none';
+
+        try {
+            setProgress(10, 'Uploading PDF...', 'Sending your material to Atlas backend...');
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('subject',    subject);
+            formData.append('difficulty', difficulty);
+            formData.append('exam_type',  examType);
+            formData.append('num_pages',  numPages);
+
+            setProgress(35, 'Building exam...', `Generating a ${difficulty.toLowerCase()} ${examType.toLowerCase()} exam — this takes 15–30 seconds...`);
+
+            const response = await fetch(`${BACKEND_URL}/api/create-exam/pdf`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            if (!response.ok || !data.success) throw new Error(data.error || `Server error (${response.status})`);
+
+            setProgress(100, 'Done!', 'Your exam is ready.');
+
+            setTimeout(() => {
+                document.getElementById('progress-section').style.display = 'none';
+                renderResults(data.exam, subject, difficulty, examType, numPages);
+            }, 400);
+
+        } catch (err) {
+            document.getElementById('progress-section').style.display = 'none';
+            document.getElementById('generate-btn').disabled = false;
+            showError(err.message);
+        }
+    }
+
+    /* ── Render results ── */
+    function renderResults(exam, subject, difficulty, examType, numPages) {
+        const questions = exam.questions || [];
+
+        document.getElementById('result-heading').textContent = (exam.subject || subject) + ' Exam';
+        document.getElementById('result-tags').innerHTML = `
+            <span class="meta-tag">📚 ${exam.subject || subject}</span>
+            <span class="meta-tag">⚡ ${difficulty}</span>
+            <span class="meta-tag">📄 ${numPages} pages</span>
+            <span class="meta-tag">${questions.length} questions</span>
+        `;
+
+        const list = document.getElementById('questions-list');
+        list.innerHTML = '';
+
+        questions.forEach((q, idx) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+
+            const options = q.options || [];
+            let optionsHTML = '';
+            if (options.length) {
+                const correctLetter = (q.answer || '').trim().charAt(0).toUpperCase();
+                optionsHTML = `
+                <div class="q-section">
+                    <div class="q-section-label">Options</div>
+                    <ul class="options-list">
+                        ${options.map(opt => {
+                            const isCorrect = opt.toString().trim().toUpperCase().startsWith(correctLetter + '.');
+                            return `<li class="${isCorrect ? 'correct' : ''}">${opt}${isCorrect ? ' ✓' : ''}</li>`;
+                        }).join('')}
+                    </ul>
+                </div>`;
+            }
+
+            card.innerHTML = `
+                <div class="q-header" onclick="toggleQ(this)">
+                    <div class="q-left">
+                        <div class="q-num">${idx + 1}</div>
+                        <div>
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+                                <span class="q-type-badge">${q.type || 'Question'}</span>
+                            </div>
+                            <div class="q-text">${q.question || ''}</div>
+                        </div>
+                    </div>
+                    <div class="q-right">
+                        <span class="q-marks">${q.marks || 1} mark${(q.marks || 1) !== 1 ? 's' : ''}</span>
+                        <span class="q-chevron">▼</span>
+                    </div>
+                </div>
+                <div class="q-body">
+                    ${optionsHTML}
+                    ${q.answer && !options.length ? `
+                    <div class="q-section">
+                        <div class="q-section-label">Model Answer</div>
+                        <div class="answer-box">${q.answer}</div>
+                    </div>` : ''}
+                    ${q.mark_scheme ? `
+                    <div class="q-section">
+                        <div class="q-section-label">Mark Scheme</div>
+                        <div class="q-section-text">${q.mark_scheme}</div>
+                    </div>` : ''}
+                </div>
+            `;
+            list.appendChild(card);
+        });
+
+        document.getElementById('results-section').style.display = 'block';
+        document.getElementById('generate-btn').disabled = false;
+        document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function toggleQ(header) {
+        header.classList.toggle('open');
+        header.nextElementSibling.classList.toggle('open');
+    }
+
+    function resetAll() {
+        selectedFile = null;
+        pdfInput.value = '';
+        document.getElementById('file-selected').style.display = 'none';
+        document.getElementById('results-section').style.display = 'none';
+        document.getElementById('progress-section').style.display = 'none';
+        dropZone.querySelector('h3').textContent = 'Drop your PDF here';
+        dropZone.querySelector('p').textContent = 'Syllabus notes, textbook chapters, revision guides';
+        hideError();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+</body>
+</html>

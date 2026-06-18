@@ -1,0 +1,548 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas // Document Summarizer</title>
+    <style>
+        :root {
+            --bg: #F4F1EA;
+            --surface: #FFFFFF;
+            --surface-2: #F0EDE6;
+            --border: #E0DDD5;
+            --text: #1A1814;
+            --muted: #6B6560;
+            --accent: #1A1814;
+            --accent-glow: rgba(26,24,20,0.07);
+            --green: #1A1814;
+            --green-bg: rgba(26,24,20,0.06);
+            --red: #B91C1C;
+            --red-bg: rgba(185,28,28,0.08);
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(244,241,234,0.9);
+            backdrop-filter: blur(8px);
+        }
+        .nav-left { display: flex; align-items: center; gap: 16px; }
+        .nav-logo { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.5px; }
+        .nav-logo span { color: var(--accent); }
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .nav-back:hover { color: var(--text); border-color: var(--accent); }
+        .backend-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 7px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted);
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+        .status-dot.online  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+        .status-dot.offline { background: var(--red); }
+
+        /* ── MAIN ── */
+        main { max-width: 860px; margin: 0 auto; padding: 48px 24px; }
+
+        .hero { text-align: center; margin-bottom: 48px; }
+        .hero h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 12px; }
+        .hero h1 em { font-style: normal; color: var(--accent); }
+        .hero p { color: var(--muted); font-size: 1rem; max-width: 500px; margin: 0 auto; }
+
+        /* ── UPLOAD CARD ── */
+        .upload-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 48px 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 20px;
+        }
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+        .drop-icon { font-size: 2.5rem; margin-bottom: 12px; }
+        .drop-zone h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+        .drop-zone p { font-size: 0.85rem; color: var(--muted); margin-bottom: 18px; }
+        .btn-upload {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.875rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            position: relative;
+            z-index: 2;
+        }
+        .btn-upload:hover { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
+        .file-selected {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            background: var(--green-bg);
+            border: 1px solid var(--green);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            color: var(--green);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .btn-action {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        .btn-action:hover { opacity: 0.9; }
+        .btn-action:active { transform: scale(0.99); }
+        .btn-action:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* ── ERROR ── */
+        #error-banner {
+            display: none;
+            background: var(--red-bg);
+            border: 1px solid var(--red);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            color: var(--red);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        /* ── PROGRESS ── */
+        #progress-section { display: none; margin-bottom: 24px; }
+        .progress-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+        }
+        .progress-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; }
+        .progress-bar-track {
+            background: var(--surface-2);
+            border-radius: 99px;
+            height: 6px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 99px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .progress-status { font-size: 0.8rem; color: var(--muted); font-family: monospace; }
+
+        /* ── RESULTS ── */
+        #results-section { display: none; }
+
+        .result-header {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px 32px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+        .result-icon {
+            font-size: 2.4rem;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .result-header-text h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .result-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .meta-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid rgba(26,24,20,0.07);
+            border-radius: 99px;
+            padding: 3px 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .result-overview {
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .section-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+        .summary-text {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: var(--text);
+        }
+        .key-points-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .key-points-list li {
+            display: flex;
+            gap: 10px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--text);
+        }
+        .kp-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-glow);
+            border: 1px solid rgba(26,24,20,0.07);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.7rem;
+            color: var(--accent);
+            font-weight: 700;
+            margin-top: 1px;
+        }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip {
+            padding: 5px 14px;
+            border-radius: 99px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .action-bar { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+        .btn-secondary {
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 1.7rem; }
+            .result-header { flex-direction: column; }
+            nav { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(244,241,234,0.98); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-left">
+        <div class="nav-logo">ATLAS <span>//</span> Summarizer</div>
+        <a class="nav-back" href="student_dashboard.html">← Dashboard</a>
+    </div>
+    <div class="backend-status" id="backend-status" style="display:none">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-text">Connecting...</span>
+    </div>
+</nav>
+
+<main>
+    <div class="hero">
+        <h1>Get the <em>key points,</em> fast.</h1>
+        <p>Upload any PDF document and Atlas AI produces a clean, structured summary you can study from in seconds.</p>
+    </div>
+
+    <!-- Upload Card -->
+    <div class="upload-card">
+        <input type="file" id="pdf-input" accept="application/pdf" style="display:none">
+        <div class="drop-zone" id="drop-zone">
+            <div class="drop-icon">📄</div>
+            <h3>Drop your PDF here</h3>
+            <p>Textbooks, notes, articles, chapters — anything works</p>
+            <button class="btn-upload" onclick="document.getElementById('pdf-input').click()">
+                📎 Choose PDF File
+            </button>
+        </div>
+
+        <div class="file-selected" id="file-selected">
+            <span>✓</span>
+            <span id="file-name-display"></span>
+        </div>
+
+        <div id="error-banner"></div>
+
+        <button class="btn-action" id="summarize-btn" onclick="runSummarize()">
+            ✦ Summarize Document
+        </button>
+    </div>
+
+    <!-- Progress -->
+    <div id="progress-section">
+        <div class="progress-card">
+            <div class="progress-label" id="progress-label">Preparing...</div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-status" id="progress-status">Initializing AI...</div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results-section">
+
+        <div class="result-header">
+            <div class="result-icon">📋</div>
+            <div class="result-header-text">
+                <h2 id="result-title">Document Summary</h2>
+                <div class="result-meta">
+                    <span class="meta-tag" id="result-difficulty"></span>
+                    <span class="meta-tag" id="result-read-time"></span>
+                </div>
+                <p class="result-overview" id="result-overview"></p>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title">📝 Full Summary</div>
+            <p class="summary-text" id="result-summary"></p>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title">✦ Key Points</div>
+            <ul class="key-points-list" id="result-key-points"></ul>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title">🏷 Key Topics</div>
+            <div class="chips" id="result-topics"></div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn-secondary" onclick="resetAll()">↩ Summarize Another Document</button>
+        </div>
+
+    </div>
+</main>
+
+<script>
+    const BACKEND_URL = 'https://web-production-6f8843.up.railway.app';
+    let selectedFile = null;
+
+    async function checkBackend() {
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/health`, { signal: AbortSignal.timeout(3000) });
+            if (res.ok) {
+                document.getElementById('status-dot').className = 'status-dot online';
+                document.getElementById('status-text').textContent = 'Backend online';
+            } else { throw new Error(); }
+        } catch {
+            document.getElementById('status-dot').className = 'status-dot offline';
+            document.getElementById('status-text').textContent = 'Backend offline';
+        }
+    }
+    window.addEventListener('DOMContentLoaded', checkBackend);
+
+    const dropZone = document.getElementById('drop-zone');
+    const pdfInput = document.getElementById('pdf-input');
+
+    pdfInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const f = e.dataTransfer.files[0];
+        if (f && f.type === 'application/pdf') handleFile(f);
+        else showError('Please drop a PDF file.');
+    });
+    dropZone.addEventListener('click', (e) => {
+        if (!e.target.closest('.btn-upload')) pdfInput.click();
+    });
+
+    function handleFile(file) {
+        if (!file) return;
+        selectedFile = file;
+        document.getElementById('file-name-display').textContent = file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)';
+        document.getElementById('file-selected').style.display = 'flex';
+        dropZone.querySelector('h3').textContent = 'PDF ready';
+        dropZone.querySelector('p').textContent = file.name;
+        hideError();
+    }
+
+    function setProgress(pct, label, status) {
+        document.getElementById('progress-fill').style.width = pct + '%';
+        document.getElementById('progress-label').textContent = label;
+        document.getElementById('progress-status').textContent = status;
+    }
+    function showError(msg) {
+        const b = document.getElementById('error-banner');
+        b.textContent = '⚠ ' + msg;
+        b.style.display = 'block';
+    }
+    function hideError() {
+        document.getElementById('error-banner').style.display = 'none';
+    }
+
+    async function runSummarize() {
+        hideError();
+        if (!selectedFile) { showError('Please select a PDF file first.'); return; }
+
+        document.getElementById('summarize-btn').disabled = true;
+        document.getElementById('progress-section').style.display = 'block';
+        document.getElementById('results-section').style.display = 'none';
+
+        try {
+            setProgress(10, 'Uploading PDF...', 'Sending your document to Atlas backend...');
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            setProgress(35, 'AI is reading...', 'Analyzing your document — this takes 10–20 seconds...');
+
+            const response = await fetch(`${BACKEND_URL}/api/summarize/pdf`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || `Server error (${response.status})`);
+            }
+
+            setProgress(100, 'Done!', 'Summary ready.');
+
+            setTimeout(() => {
+                document.getElementById('progress-section').style.display = 'none';
+                renderResults(data.summary);
+            }, 400);
+
+        } catch (err) {
+            document.getElementById('progress-section').style.display = 'none';
+            document.getElementById('summarize-btn').disabled = false;
+            showError(err.message);
+        }
+    }
+
+    function renderResults(s) {
+        document.getElementById('result-title').textContent = s.title || 'Document Summary';
+        document.getElementById('result-overview').textContent = s.overview || '';
+        document.getElementById('result-difficulty').textContent = '📊 ' + (s.difficulty_level || 'General');
+        document.getElementById('result-read-time').textContent = '⏱ ' + (s.estimated_read_time || '—');
+        document.getElementById('result-summary').textContent = s.detailed_summary || s.summary || '';
+
+        const kpList = document.getElementById('result-key-points');
+        kpList.innerHTML = '';
+        (s.key_points || []).forEach((pt, i) => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span class="kp-dot">${i + 1}</span><span>${pt}</span>`;
+            kpList.appendChild(li);
+        });
+
+        const topicsEl = document.getElementById('result-topics');
+        topicsEl.innerHTML = (s.key_topics || []).map(t => `<span class="chip">${t}</span>`).join('');
+
+        document.getElementById('results-section').style.display = 'block';
+        document.getElementById('summarize-btn').disabled = false;
+        document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetAll() {
+        selectedFile = null;
+        pdfInput.value = '';
+        document.getElementById('file-selected').style.display = 'none';
+        document.getElementById('results-section').style.display = 'none';
+        document.getElementById('progress-section').style.display = 'none';
+        dropZone.querySelector('h3').textContent = 'Drop your PDF here';
+        dropZone.querySelector('p').textContent = 'Textbooks, notes, articles, chapters — anything works';
+        hideError();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,742 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas // Bulk Exam Checking</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+        --bg:         #F4F1EA;
+        --surface:    #FFFFFF;
+        --surface-2:  #F0EDE6;
+        --border:     #E0DDD5;
+        --border-hi:  rgba(26,24,20,0.12);
+        --text:       #1A1814;
+        --text-2:     #6B6560;
+        --text-3:     #9E9A94;
+        --accent:     #1A1814;
+        --accent-dim: rgba(26,24,20,0.06);
+        --accent-glow:rgba(26,24,20,0.06);
+        --green:      #1A1814;
+        --red:        #B91C1C;
+        --amber:      #1A1814;
+        --radius:     16px;
+        --nav-h:      60px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+        font-family: 'Inter', -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── ORBS ── */
+    .bg-orbs { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+    .orb { position:absolute; border-radius:50%; filter:blur(110px); will-change:transform; }
+    .orb-1 { width:600px; height:600px; background:radial-gradient(circle,rgba(26,24,20,0.06) 0%,transparent 70%); top:-200px; right:-100px; animation:drift1 28s ease-in-out infinite; }
+    .orb-2 { width:500px; height:500px; background:radial-gradient(circle,rgba(26,24,20,0.07) 0%,transparent 70%); bottom:-150px; left:-100px; animation:drift2 34s ease-in-out infinite; }
+    @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,30px)} }
+    @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(40px,-30px)} }
+
+    /* ── NAV ── */
+    nav {
+        position:sticky; top:0; z-index:50;
+        height:var(--nav-h); display:flex; align-items:center; justify-content:space-between;
+        padding:0 28px;
+        background:rgba(244,241,234,0.85); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+        border-bottom:1px solid var(--border);
+    }
+    .nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .brand-icon {
+        width:30px; height:30px; border-radius:8px;
+        background:linear-gradient(135deg,#1A1814 0%,#1A1814 100%);
+        display:flex; align-items:center; justify-content:center;
+        box-shadow:0 0 14px rgba(26,24,20,0.06); flex-shrink:0;
+    }
+    .brand-name { font-family:'Space Grotesk',sans-serif; font-size:0.95rem; font-weight:800; letter-spacing:-0.3px; color:var(--text); }
+    .brand-slash { color:var(--accent); font-weight:800; }
+    .back-btn {
+        display:flex; align-items:center; gap:7px;
+        padding:7px 14px; border-radius:10px;
+        border:1px solid var(--border); background:transparent;
+        color:var(--text-2); font-size:0.82rem; font-weight:500;
+        text-decoration:none; cursor:pointer;
+        transition:border-color 0.2s,color 0.2s,background 0.2s;
+    }
+    .back-btn:hover { border-color:var(--border-hi); color:var(--text); background:rgba(26,24,20,0.04); }
+
+    /* ── LAYOUT ── */
+    .page { position:relative; z-index:1; max-width:860px; margin:0 auto; padding:52px 24px 100px; }
+
+    /* ── HERO ── */
+    .hero { margin-bottom:36px; }
+    .hero-badge {
+        display:inline-flex; align-items:center; gap:8px;
+        padding:4px 13px; border-radius:99px;
+        background:var(--accent-dim); border:1px solid rgba(26,24,20,0.06);
+        font-size:0.72rem; font-weight:700; color:#1A1814; margin-bottom:14px;
+        letter-spacing:0.4px; text-transform:uppercase;
+    }
+    .hero h1 {
+        font-family:'Space Grotesk',sans-serif;
+        font-size:clamp(1.6rem,3.5vw,2.4rem); font-weight:800;
+        letter-spacing:-0.8px; line-height:1.15; margin-bottom:8px;
+    }
+    .hero p { font-size:0.9rem; color:var(--text-2); max-width:520px; line-height:1.65; }
+
+    /* ── CARD ── */
+    .card {
+        background:var(--surface);
+        border:1px solid var(--border);
+        border-radius:var(--radius);
+        padding:24px;
+        margin-bottom:18px;
+    }
+    .card-title {
+        font-family:'Space Grotesk',sans-serif;
+        font-size:0.9rem; font-weight:700;
+        color:var(--text); margin-bottom:16px;
+        display:flex; align-items:center; gap:8px;
+    }
+    .card-title-tag {
+        font-size:0.65rem; padding:2px 8px; border-radius:99px;
+        background:var(--accent-dim); border:1px solid rgba(26,24,20,0.06);
+        color:#1A1814; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;
+    }
+    .optional-tag {
+        font-size:0.65rem; padding:2px 8px; border-radius:99px;
+        background:rgba(26,24,20,0.04); border:1px solid var(--border);
+        color:var(--text-3); font-weight:600; text-transform:uppercase; letter-spacing:0.5px;
+        margin-left:auto;
+    }
+
+    /* ── DROP ZONE ── */
+    .drop-zone {
+        border:2px dashed rgba(26,24,20,0.06);
+        border-radius:12px; padding:36px 20px; text-align:center;
+        cursor:pointer; transition:border-color 0.2s,background 0.2s;
+        background:rgba(26,24,20,0.06);
+        position:relative;
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+        border-color:rgba(26,24,20,0.06);
+        background:rgba(26,24,20,0.06);
+    }
+    .drop-zone input[type="file"] {
+        position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;
+    }
+    .drop-icon { font-size:2rem; margin-bottom:10px; display:block; }
+    .drop-text { font-size:0.9rem; font-weight:600; color:var(--text); margin-bottom:5px; }
+    .drop-sub  { font-size:0.78rem; color:var(--text-3); }
+
+    .drop-zone.sm { padding:20px; }
+    .drop-zone.sm .drop-icon { font-size:1.4rem; margin-bottom:6px; }
+    .drop-zone.sm .drop-text { font-size:0.82rem; }
+
+    /* ── FILE LIST ── */
+    #file-list { display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+    .file-row {
+        display:grid; grid-template-columns:28px 1fr auto 28px;
+        align-items:center; gap:10px;
+        background:var(--surface-2); border:1px solid var(--border);
+        border-radius:10px; padding:10px 12px;
+        transition:border-color 0.15s;
+    }
+    .file-row:hover { border-color:var(--border-hi); }
+    .file-icon { font-size:1.1rem; text-align:center; }
+    .file-name-input {
+        background:rgba(26,24,20,0.04); border:1px solid var(--border);
+        border-radius:8px; padding:7px 10px;
+        color:var(--text); font-family:'Inter',sans-serif; font-size:0.82rem;
+        width:100%; outline:none; transition:border-color 0.2s,background 0.2s;
+    }
+    .file-name-input:focus { border-color:rgba(26,24,20,0.06); background:rgba(26,24,20,0.06); }
+    .file-size { font-size:0.72rem; color:var(--text-3); white-space:nowrap; }
+    .file-remove {
+        width:26px; height:26px; border-radius:7px;
+        border:1px solid rgba(185,28,28,0.08); background:transparent;
+        color:#B91C1C; cursor:pointer; font-size:0.9rem;
+        display:flex; align-items:center; justify-content:center;
+        transition:background 0.2s,border-color 0.2s;
+        flex-shrink:0;
+    }
+    .file-remove:hover { background:rgba(185,28,28,0.08); border-color:rgba(185,28,28,0.08); }
+
+    /* ── ANSWER KEY ── */
+    #ak-filename {
+        display:flex; align-items:center; gap:10px; margin-top:12px;
+        background:var(--surface-2); border:1px solid var(--border);
+        border-radius:10px; padding:10px 14px;
+    }
+    #ak-filename span { font-size:0.82rem; color:var(--text-2); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .ak-clear { background:none; border:none; color:var(--text-3); cursor:pointer; font-size:1rem; padding:2px; transition:color 0.2s; }
+    .ak-clear:hover { color:#B91C1C; }
+
+    /* ── SUBJECT ROW ── */
+    .settings-row { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+    .label { font-size:0.8rem; font-weight:600; color:var(--text-2); white-space:nowrap; }
+    select {
+        background:var(--surface-2); border:1px solid var(--border);
+        border-radius:9px; padding:8px 32px 8px 12px;
+        color:var(--text); font-family:'Inter',sans-serif; font-size:0.83rem;
+        outline:none; cursor:pointer; appearance:none;
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat:no-repeat; background-position:right 10px center;
+        transition:border-color 0.2s,background-color 0.2s;
+    }
+    select:focus { border-color:rgba(26,24,20,0.06); }
+
+    /* ── SUBMIT BUTTON ── */
+    .submit-btn {
+        width:100%; padding:15px;
+        background:linear-gradient(135deg,#1A1814 0%,#1A1814 100%);
+        border:none; border-radius:12px; cursor:pointer;
+        font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:700;
+        color:#fff; letter-spacing:-0.2px;
+        box-shadow:0 0 0 0 var(--accent-glow);
+        transition:opacity 0.2s,transform 0.15s,box-shadow 0.3s;
+        margin-top:4px;
+    }
+    .submit-btn:hover:not(:disabled) { opacity:0.92; transform:translateY(-1px); box-shadow:0 8px 30px var(--accent-glow); }
+    .submit-btn:active:not(:disabled) { transform:translateY(0); }
+    .submit-btn:disabled { opacity:0.35; cursor:not-allowed; }
+
+    /* ── PROGRESS ── */
+    #progress-box {
+        display:none;
+        background:var(--surface); border:1px solid var(--border);
+        border-radius:var(--radius); padding:28px 24px; text-align:center;
+        margin-bottom:18px;
+    }
+    .progress-spinner {
+        width:42px; height:42px; margin:0 auto 16px;
+        border:3px solid rgba(26,24,20,0.06);
+        border-top-color:var(--accent);
+        border-radius:50%;
+        animation:spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .progress-title { font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:700; margin-bottom:6px; }
+    .progress-sub   { font-size:0.83rem; color:var(--text-2); }
+
+    /* ── RESULTS ── */
+    #results-section { display:none; }
+
+    /* Stats strip */
+    .stats-strip {
+        display:grid; grid-template-columns:repeat(4,1fr); gap:12px;
+        margin-bottom:22px;
+    }
+    .stat-chip {
+        background:var(--surface); border:1px solid var(--border);
+        border-radius:12px; padding:16px 14px; text-align:center;
+        position:relative; overflow:hidden;
+    }
+    .stat-chip::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:12px 12px 0 0; }
+    .stat-chip.s-total::before  { background:linear-gradient(90deg,#1A1814,#1A1814); }
+    .stat-chip.s-avg::before    { background:linear-gradient(90deg,#1A1814,#4A4541); }
+    .stat-chip.s-high::before   { background:linear-gradient(90deg,#059669,#1A1814); }
+    .stat-chip.s-low::before    { background:linear-gradient(90deg,#b91c1c,#B91C1C); }
+    .stat-chip-val  { font-family:'Space Grotesk',sans-serif; font-size:1.7rem; font-weight:800; letter-spacing:-0.5px; }
+    .s-total .stat-chip-val  { color:#1A1814; }
+    .s-avg   .stat-chip-val  { color:#4A4541; }
+    .s-high  .stat-chip-val  { color:#1A1814; }
+    .s-low   .stat-chip-val  { color:#B91C1C; }
+    .stat-chip-label { font-size:0.7rem; color:var(--text-3); font-weight:500; text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; }
+
+    /* Table */
+    .results-header {
+        display:flex; align-items:center; justify-content:space-between;
+        margin-bottom:14px;
+    }
+    .results-title { font-family:'Space Grotesk',sans-serif; font-size:0.9rem; font-weight:700; }
+    .csv-btn {
+        display:flex; align-items:center; gap:7px;
+        padding:8px 16px; border-radius:10px;
+        border:1px solid rgba(26,24,20,0.06);
+        background:rgba(26,24,20,0.06);
+        color:#1A1814; font-size:0.78rem; font-weight:600;
+        cursor:pointer; transition:background 0.2s,border-color 0.2s;
+    }
+    .csv-btn:hover { background:rgba(26,24,20,0.06); border-color:rgba(26,24,20,0.06); }
+
+    .table-wrap { overflow-x:auto; border-radius:var(--radius); border:1px solid var(--border); }
+    table { width:100%; border-collapse:collapse; }
+    thead { background:var(--surface-2); }
+    thead th {
+        padding:12px 16px; text-align:left;
+        font-size:0.73rem; font-weight:700; text-transform:uppercase;
+        letter-spacing:0.6px; color:var(--text-3);
+        border-bottom:1px solid var(--border);
+    }
+    tbody tr { border-bottom:1px solid var(--border); transition:background 0.15s; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:rgba(255,255,255,0.02); }
+    tbody td { padding:13px 16px; font-size:0.84rem; vertical-align:middle; }
+    .td-name { font-weight:600; color:var(--text); }
+    .td-score {
+        font-family:'Space Grotesk',sans-serif;
+        font-size:1rem; font-weight:800;
+    }
+    .score-high  { color:#1A1814; }
+    .score-mid   { color:#1A1814; }
+    .score-low   { color:#B91C1C; }
+    .score-err   { color:var(--text-3); font-size:0.82rem; font-weight:500; }
+    .grade-badge {
+        display:inline-block; padding:3px 10px; border-radius:99px;
+        font-size:0.72rem; font-weight:800; letter-spacing:0.3px;
+        font-family:'Space Grotesk',sans-serif;
+    }
+    .grade-A  { background:rgba(26,24,20,0.07); color:#1A1814; border:1px solid rgba(26,24,20,0.07); }
+    .grade-B  { background:rgba(26,24,20,0.07); color:#4A4541; border:1px solid rgba(26,24,20,0.07); }
+    .grade-C  { background:rgba(251,191,36,0.1);  color:#1A1814; border:1px solid rgba(251,191,36,0.2); }
+    .grade-D  { background:rgba(249,115,22,0.1);  color:#1A1814; border:1px solid rgba(249,115,22,0.2); }
+    .grade-F  { background:rgba(185,28,28,0.08); color:#B91C1C; border:1px solid rgba(185,28,28,0.08); }
+    .grade-na { background:rgba(255,255,255,0.05); color:var(--text-3); border:1px solid var(--border); }
+
+    .status-pass {
+        display:inline-flex; align-items:center; gap:5px;
+        padding:3px 10px; border-radius:99px;
+        font-size:0.72rem; font-weight:700;
+        background:rgba(26,24,20,0.07); color:#1A1814; border:1px solid rgba(26,24,20,0.07);
+    }
+    .status-fail {
+        display:inline-flex; align-items:center; gap:5px;
+        padding:3px 10px; border-radius:99px;
+        font-size:0.72rem; font-weight:700;
+        background:rgba(185,28,28,0.08); color:#B91C1C; border:1px solid rgba(185,28,28,0.08);
+    }
+    .status-err {
+        display:inline-flex; align-items:center; gap:5px;
+        padding:3px 10px; border-radius:99px;
+        font-size:0.72rem; font-weight:700;
+        background:rgba(26,24,20,0.04); color:var(--text-3); border:1px solid var(--border);
+    }
+    .td-summary { font-size:0.78rem; color:var(--text-2); max-width:260px; line-height:1.5; }
+
+    /* ── ERROR BOX ── */
+    #error-box {
+        display:none; background:rgba(185,28,28,0.08);
+        border:1px solid rgba(185,28,28,0.08); border-radius:12px;
+        padding:16px 18px; margin-bottom:18px;
+        font-size:0.85rem; color:#B91C1C;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width:640px) {
+        .stats-strip { grid-template-columns:repeat(2,1fr); }
+        .td-summary  { display:none; }
+        thead th:nth-child(4) { display:none; }
+        tbody td:nth-child(4) { display:none; }
+    }
+    @media (max-width: 767px) {
+        .orb { animation: none !important; will-change: auto; }
+        nav { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .orb { animation: none !important; will-change: auto; }
+    }
+    </style>
+</head>
+<body>
+
+<div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+</div>
+
+<nav>
+    <a href="school_dashboard.html" class="nav-brand">
+        <div class="brand-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M2 12c1.5 0 1.5-2 3-2s1.5 2 3 2 1.5-2 3-2 1.5 2 3 2 1.5-2 3-2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <path d="M2 17c1.5 0 1.5-2 3-2s1.5 2 3 2 1.5-2 3-2 1.5 2 3 2 1.5-2 3-2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <path d="M2 7c1.5 0 1.5-2 3-2s1.5 2 3 2 1.5-2 3-2 1.5 2 3 2 1.5-2 3-2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <span class="brand-name">ATLAS <span class="brand-slash">//</span></span>
+    </a>
+    <a href="school_dashboard.html" class="back-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Dashboard
+    </a>
+</nav>
+
+<div class="page">
+
+    <div class="hero">
+        <div class="hero-badge">✦ Bulk Grading</div>
+        <h1>Bulk Exam Checking</h1>
+        <p>Upload an entire class worth of exam PDFs. Atlas AI grades every student and produces a full class report — in one go.</p>
+    </div>
+
+    <!-- Error -->
+    <div id="error-box"></div>
+
+    <!-- Student Exams Upload -->
+    <div class="card">
+        <div class="card-title">
+            Student Exam PDFs
+            <span class="card-title-tag">Required</span>
+        </div>
+
+        <div class="drop-zone" id="main-drop" role="button" tabindex="0" aria-label="Upload student exams">
+            <input type="file" id="file-input" accept=".pdf" multiple>
+            <span class="drop-icon">📄</span>
+            <div class="drop-text">Drag &amp; drop student exam PDFs here</div>
+            <div class="drop-sub">or click to browse · multiple files supported · max 30 exams</div>
+        </div>
+
+        <div id="file-list"></div>
+    </div>
+
+    <!-- Answer Key Upload -->
+    <div class="card">
+        <div class="card-title">
+            Answer Key PDF
+            <span class="optional-tag">Optional</span>
+        </div>
+        <p style="font-size:0.82rem;color:var(--text-2);margin-bottom:14px;line-height:1.6;">
+            If you upload a mark scheme or answer key, Atlas will grade student answers against it for higher accuracy. Without one, Atlas grades based on the quality and correctness of the answers.
+        </p>
+
+        <div class="drop-zone sm" id="ak-drop" role="button" tabindex="0" aria-label="Upload answer key">
+            <input type="file" id="ak-input" accept=".pdf">
+            <span class="drop-icon">🔑</span>
+            <div class="drop-text">Drop answer key / mark scheme PDF here</div>
+            <div class="drop-sub">or click to browse · single file</div>
+        </div>
+
+        <div id="ak-filename" style="display:none;">
+            <span>🔑</span>
+            <span id="ak-name"></span>
+            <button class="ak-clear" id="ak-clear" title="Remove answer key">✕</button>
+        </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="card">
+        <div class="card-title">Settings</div>
+        <div class="settings-row">
+            <span class="label">Subject:</span>
+            <select id="subject-select">
+                <option value="General">General</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Biology">Biology</option>
+                <option value="English">English</option>
+                <option value="History">History</option>
+                <option value="Geography">Geography</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Economics">Economics</option>
+                <option value="Psychology">Psychology</option>
+                <option value="Business Studies">Business Studies</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Submit -->
+    <button class="submit-btn" id="grade-btn" onclick="startGrading()" disabled>
+        Grade All Exams
+    </button>
+
+    <!-- Progress -->
+    <div id="progress-box">
+        <div class="progress-spinner"></div>
+        <div class="progress-title">Atlas is grading your class…</div>
+        <div class="progress-sub" id="progress-sub">Uploading and processing exams</div>
+    </div>
+
+    <!-- Results -->
+    <div id="results-section">
+
+        <div class="stats-strip">
+            <div class="stat-chip s-total">
+                <div class="stat-chip-val" id="s-total">—</div>
+                <div class="stat-chip-label">Total Graded</div>
+            </div>
+            <div class="stat-chip s-avg">
+                <div class="stat-chip-val" id="s-avg">—</div>
+                <div class="stat-chip-label">Average Score</div>
+            </div>
+            <div class="stat-chip s-high">
+                <div class="stat-chip-val" id="s-high">—</div>
+                <div class="stat-chip-label">Highest</div>
+            </div>
+            <div class="stat-chip s-low">
+                <div class="stat-chip-val" id="s-low">—</div>
+                <div class="stat-chip-label">Lowest</div>
+            </div>
+        </div>
+
+        <div class="results-header">
+            <div class="results-title">Results</div>
+            <button class="csv-btn" onclick="downloadCSV()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Download CSV
+            </button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Student Name</th>
+                        <th>Score</th>
+                        <th>Grade</th>
+                        <th>Status</th>
+                        <th>Summary</th>
+                    </tr>
+                </thead>
+                <tbody id="results-tbody"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    const API = 'https://web-production-6f8843.up.railway.app';
+    let _files     = [];   // {file: File, name: string}
+    let _answerKey = null; // File | null
+    let _results   = [];   // latest results from API
+
+    // ── File handling ──
+
+    function formatBytes(b) {
+        if (b < 1024) return b + ' B';
+        if (b < 1024 * 1024) return (b / 1024).toFixed(0) + ' KB';
+        return (b / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function defaultName(filename) {
+        return filename.replace(/\.pdf$/i, '').replace(/[_\-]+/g, ' ');
+    }
+
+    function renderFileList() {
+        const list = document.getElementById('file-list');
+        list.innerHTML = '';
+        _files.forEach((entry, i) => {
+            const row = document.createElement('div');
+            row.className = 'file-row';
+            row.innerHTML = `
+                <span class="file-icon">📄</span>
+                <input class="file-name-input" type="text" value="${escHtml(entry.name)}"
+                       placeholder="Student name" oninput="_files[${i}].name = this.value" />
+                <span class="file-size">${formatBytes(entry.file.size)}</span>
+                <button class="file-remove" onclick="removeFile(${i})" title="Remove">✕</button>
+            `;
+            list.appendChild(row);
+        });
+        updateBtn();
+    }
+
+    function addFiles(newFiles) {
+        for (const f of newFiles) {
+            if (!f.name.toLowerCase().endsWith('.pdf')) continue;
+            if (_files.length >= 30) break;
+            _files.push({ file: f, name: defaultName(f.name) });
+        }
+        renderFileList();
+    }
+
+    function removeFile(i) {
+        _files.splice(i, 1);
+        renderFileList();
+    }
+
+    function updateBtn() {
+        document.getElementById('grade-btn').disabled = _files.length === 0;
+    }
+
+    // Student file input
+    const fileInput = document.getElementById('file-input');
+    fileInput.addEventListener('change', () => { addFiles(fileInput.files); fileInput.value = ''; });
+
+    // Answer key input
+    const akInput = document.getElementById('ak-input');
+    akInput.addEventListener('change', () => {
+        if (akInput.files[0]) setAnswerKey(akInput.files[0]);
+        akInput.value = '';
+    });
+
+    function setAnswerKey(f) {
+        _answerKey = f;
+        document.getElementById('ak-name').textContent = f.name;
+        document.getElementById('ak-filename').style.display = 'flex';
+        document.getElementById('ak-drop').style.display = 'none';
+    }
+
+    document.getElementById('ak-clear').addEventListener('click', () => {
+        _answerKey = null;
+        document.getElementById('ak-filename').style.display = 'none';
+        document.getElementById('ak-drop').style.display = '';
+    });
+
+    // ── Drag and drop ──
+    function setupDrop(zoneId, onFiles) {
+        const zone = document.getElementById(zoneId);
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+        zone.addEventListener('drop', e => {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            onFiles(e.dataTransfer.files);
+        });
+    }
+
+    setupDrop('main-drop', files => addFiles(files));
+    setupDrop('ak-drop', files => { if (files[0]) setAnswerKey(files[0]); });
+
+    // ── Grading ──
+    async function startGrading() {
+        if (_files.length === 0) return;
+
+        showError('');
+        setLoading(true);
+        document.getElementById('results-section').style.display = 'none';
+
+        const fd = new FormData();
+        _files.forEach(entry => {
+            fd.append('files', entry.file, entry.file.name);
+            fd.append('student_names', entry.name);
+        });
+        if (_answerKey) fd.append('answer_key', _answerKey, _answerKey.name);
+        fd.append('subject', document.getElementById('subject-select').value);
+
+        const total = _files.length;
+        updateProgress(`Grading ${total} exam${total > 1 ? 's' : ''} — this may take a moment`);
+
+        try {
+            const res = await fetch(`${API}/api/bulk-check`, { method: 'POST', body: fd });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Server error');
+            showResults(data);
+        } catch (err) {
+            showError('Grading failed: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    function setLoading(on) {
+        document.getElementById('progress-box').style.display = on ? 'block' : 'none';
+        document.getElementById('grade-btn').disabled = on;
+        document.getElementById('grade-btn').textContent = on ? 'Grading…' : 'Grade All Exams';
+    }
+
+    function updateProgress(msg) {
+        document.getElementById('progress-sub').textContent = msg;
+    }
+
+    // ── Results ──
+    function showResults(data) {
+        _results = data.results || [];
+        const s   = data.summary || {};
+
+        document.getElementById('s-total').textContent = s.total_graded ?? _results.length;
+        document.getElementById('s-avg').textContent   = s.average_score != null ? s.average_score + '%' : '—';
+        document.getElementById('s-high').textContent  = s.highest_score != null ? s.highest_score + '%' : '—';
+        document.getElementById('s-low').textContent   = s.lowest_score  != null ? s.lowest_score  + '%' : '—';
+
+        const tbody = document.getElementById('results-tbody');
+        tbody.innerHTML = '';
+
+        _results.forEach((r, i) => {
+            const scoreClass = r.error ? 'score-err'
+                : r.score >= 70 ? 'score-high'
+                : r.score >= 50 ? 'score-mid'
+                : 'score-low';
+
+            const gradeKey = r.grade ? r.grade.replace('+', '') : '';
+            const gradeClass = r.error ? 'grade-na'
+                : gradeKey === 'A' ? 'grade-A'
+                : gradeKey === 'B' ? 'grade-B'
+                : gradeKey === 'C' ? 'grade-C'
+                : gradeKey === 'D' ? 'grade-D'
+                : gradeKey === 'F' ? 'grade-F'
+                : 'grade-na';
+
+            const statusHtml = r.error
+                ? `<span class="status-err">Error</span>`
+                : r.status === 'Pass'
+                    ? `<span class="status-pass">✓ Pass</span>`
+                    : `<span class="status-fail">✗ Fail</span>`;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="color:var(--text-3);font-size:0.78rem;">${i + 1}</td>
+                <td class="td-name">${escHtml(r.student_name)}</td>
+                <td><span class="${scoreClass} td-score">${r.score != null ? r.score + '%' : '—'}</span></td>
+                <td><span class="grade-badge ${gradeClass}">${escHtml(r.grade || '—')}</span></td>
+                <td>${statusHtml}</td>
+                <td class="td-summary">${escHtml(r.summary || '')}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('results-section').style.display = 'block';
+        document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById('grade-btn').disabled = false;
+        document.getElementById('grade-btn').textContent = 'Grade All Exams';
+    }
+
+    // ── CSV Download ──
+    function downloadCSV() {
+        if (!_results.length) return;
+        const rows = [['Student Name', 'Score (%)', 'Grade', 'Status', 'Summary']];
+        _results.forEach(r => {
+            rows.push([
+                csvCell(r.student_name),
+                r.score != null ? r.score : '',
+                csvCell(r.grade || ''),
+                csvCell(r.status || ''),
+                csvCell(r.summary || '')
+            ]);
+        });
+        const csv  = rows.map(r => r.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href = url;
+        a.download = 'atlas_bulk_results.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function csvCell(v) {
+        const s = String(v).replace(/"/g, '""');
+        return /[,"\n]/.test(s) ? `"${s}"` : s;
+    }
+
+    // ── Helpers ──
+    function escHtml(s) {
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('error-box');
+        el.textContent = msg;
+        el.style.display = msg ? 'block' : 'none';
+    }
+</script>
+</body>
+</html>

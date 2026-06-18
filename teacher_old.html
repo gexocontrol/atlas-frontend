@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas // Teacher Command Console</title>
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-blue: #2563eb;
+            --accent-blue-hover: #1d4ed8;
+            --accent-teal: #0d9488;
+            --accent-teal-hover: #0f766e;
+            --border-color: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-primary); color: var(--text-main); padding: 40px 20px; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; }
+        .app-container { width: 100%; max-width: 1200px; margin: 0 auto; }
+        
+        /* Navigation Controls */
+        .dashboard-navbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: var(--surface); padding: 15px 30px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow); flex-wrap: wrap; gap: 15px; }
+        .nav-profile { display: flex; align-items: center; gap: 12px; }
+        
+        /* Interactive Key Input Field */
+        .key-input-container { display: flex; align-items: center; gap: 8px; background: var(--bg-primary); padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 8px; }
+        .key-input-container label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+        .key-input-container input { border: none; background: transparent; font-family: monospace; font-size: 0.85rem; color: var(--text-main); outline: none; width: 220px; }
+
+        /* Main Portals Grid UI */
+        .portal-layout { display: grid; grid-template-columns: 300px 1fr; gap: 30px; }
+        .sidebar-menu { display: flex; flex-direction: column; gap: 10px; }
+        .menu-tab { background: var(--surface); border: 1px solid var(--border-color); padding: 16px; border-radius: 8px; text-align: left; font-weight: 700; font-size: 0.9rem; color: var(--text-muted); cursor: pointer; width: 100%; transition: all 0.2s; }
+        .menu-tab:hover { background: #f1f5f9; }
+        .menu-tab.active-tab { background: var(--text-main); color: white; border-color: var(--text-main); }
+        
+        .main-workspace { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border-color); padding: 40px; box-shadow: var(--shadow); min-height: 480px; }
+        .workspace-panel { display: none; }
+
+        /* Config fields and items styling */
+        .config-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+        .config-field { display: flex; flex-direction: column; gap: 5px; }
+        .config-field label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+        .config-field select { padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); background-color: var(--bg-primary); font-weight: 600; outline: none; color: var(--text-main); }
+
+        .file-input-wrapper { width: 100%; padding: 30px 20px; background: var(--bg-primary); border: 2px dashed #cbd5e1; border-radius: var(--radius); text-align: center; margin-bottom: 20px; transition: border-color 0.2s; }
+        .file-input-wrapper:hover { border-color: var(--accent-blue); }
+        .file-input-wrapper input { font-size: 0.9rem; color: var(--text-muted); cursor: pointer; }
+        
+        .btn { display: inline-block; width: 100%; padding: 14px; border: none; border-radius: var(--radius); color: #ffffff; text-transform: uppercase; font-size: 0.85rem; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: background 0.2s; }
+        .btn-blue { background-color: var(--accent-blue); }
+        .btn-blue:hover { background-color: var(--accent-blue-hover); }
+        .btn-teal { background-color: var(--accent-teal); }
+        .btn-teal:hover { background-color: var(--accent-teal-hover); }
+
+        /* Terminal System Window */
+        .results-panel { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border-color); padding: 30px; box-shadow: var(--shadow); margin-top: 30px; }
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 2px solid var(--bg-primary); padding-bottom: 15px; }
+        .pdf-download-wrapper { display: none; }
+        .btn-download { background-color: #dc2626; color: white; padding: 10px 20px; font-size: 0.85rem; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; text-transform: uppercase; }
+        .btn-download:hover { background-color: #b91c1c; }
+
+        #output-display { background-color: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 20px; min-height: 250px; font-family: 'Courier New', Courier, monospace; font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; overflow-y: auto; color: #0f172a; }
+    </style>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+
+        <nav class="dashboard-navbar">
+            <h2 style="font-weight: 800; letter-spacing: -0.5px;">ATLAS // TEACHER PLATFORM</h2>
+            <div class="nav-profile">
+                <div class="key-input-container">
+                    <label for="user-key-field">🔑 API Key:</label>
+                    <input type="password" id="user-key-field" placeholder="Paste AIzaSy... key here" oninput="saveActiveKey(this.value)">
+                </div>
+                <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Educator Mode</span>
+            </div>
+        </nav>
+
+        <div class="portal-layout">
+            <aside class="sidebar-menu">
+                <button class="menu-tab active-tab" onclick="switchWorkspacePanel('panel-teacher-gen', this)">📝 Exam Generation</button>
+                <button class="menu-tab" onclick="switchWorkspacePanel('panel-teacher-batch', this)">🔍 Batch Exam Checking</button>
+            </aside>
+
+            <main class="main-workspace">
+                
+                <div id="panel-teacher-gen" class="workspace-panel" style="display: block;">
+                    <h2 style="margin-bottom: 6px;">Assessment Variant Matrix</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Parse standard syllabus blueprints or lesson materials to generate print-ready mock evaluation exams.</p>
+                    
+                    <div class="config-group">
+                        <div class="config-field">
+                            <label>Difficulty Rating</label>
+                            <select id="cfg-difficulty">
+                                <option value="Core (Easy/Foundational)">Core (Easy)</option>
+                                <option value="Extended (Medium/Standard IGCSE)" selected>Extended (Medium)</option>
+                                <option value="Advanced (Hard/A-Level Variant)">Advanced (Hard)</option>
+                            </select>
+                        </div>
+                        <div class="config-field">
+                            <label>Question Limit</label>
+                            <select id="cfg-questions">
+                                <option value="3 Short-Answer Questions">3 Questions</option>
+                                <option value="5 Structured Questions" selected>5 Questions</option>
+                                <option value="10 Comprehensive Questions">10 Questions</option>
+                            </select>
+                        </div>
+                        <div class="config-field">
+                            <label>Allocated Time</label>
+                            <select id="cfg-time">
+                                <option value="45 Minutes">45 Mins</option>
+                                <option value="1 Hour" selected>1 Hour</option>
+                                <option value="2 Hours">2 Hours</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="file-input-wrapper">
+                        <input type="file" id="teacher-syllabus-file" accept=".pdf">
+                    </div>
+                    <button id="teacher-gen-btn" class="btn btn-teal">Compile Mock Blueprint</button>
+                </div>
+
+                <div id="panel-teacher-batch" class="workspace-panel">
+                    <h2 style="margin-bottom: 6px;">Batch Script Evaluator</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Upload multiple student mock submissions simultaneously. Accepts direct camera pictures or multi-page script PDFs.</p>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="teacher-batch-files" accept="image/*,application/pdf" multiple>
+                    </div>
+                    <button id="teacher-batch-btn" class="btn btn-blue">Run Batch Evaluation</button>
+                </div>
+
+            </main>
+        </div>
+
+        <section class="results-panel">
+            <div class="results-header">
+                <h2 style="font-size: 1.1rem; font-weight: 800; letter-spacing: 0.5px;">Live Execution Output</h2>
+                <div id="download-zone" class="pdf-download-wrapper">
+                    <button id="download-pdf-btn" class="btn-download">📥 Download Print-Ready PDF</button>
+                </div>
+            </div>
+            <div id="output-display">Awaiting local file allocation profile input...</div>
+        </section>
+
+    </div>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+        const outputDisplay = document.getElementById('output-display');
+        const downloadZone = document.getElementById('download-zone');
+        const downloadPdfBtn = document.getElementById('download-pdf-btn');
+        let generatedExamText = "";
+
+        // Key persistence lifecycle handling
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('atlas_gemini_key');
+            if(savedKey) {
+                document.getElementById('user-key-field').value = savedKey;
+            }
+        });
+
+        function saveActiveKey(value) {
+            localStorage.setItem('atlas_gemini_key', value.trim());
+        }
+
+        function getActiveKey() {
+            const currentKey = document.getElementById('user-key-field').value.trim();
+            if(!currentKey) {
+                throw new Error("Missing API Access Token. Please enter a valid key in the top navigation bar.");
+            }
+            return currentKey;
+        }
+
+        function switchWorkspacePanel(panelId, tabElement) {
+            document.querySelectorAll('.workspace-panel').forEach(p => p.style.display = 'none');
+            document.getElementById(panelId).style.display = 'block';
+            
+            document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active-tab'));
+            tabElement.classList.add('active-tab');
+            
+            downloadZone.style.display = "none";
+            outputDisplay.textContent = "[SYSTEM STATUS] Display panel frame switched.";
+        }
+
+        function sanitizePayloadText(rawText) {
+            return rawText
+                .replace(/[\u0000-\u001F\u007F-\u009F]/g, "") 
+                .replace(/\\/g, "\\\\")                       
+                .replace(/"/g, '\\"')                         
+                .replace(/\s+/g, " ")                         
+                .trim();
+        }
+
+        // --- TASK 1: EXAM GENERATION LOGIC ---
+        document.getElementById('teacher-gen-btn').addEventListener('click', async () => {
+            const fileInput = document.getElementById('teacher-syllabus-file');
+            if(!fileInput.files[0]) { logStatus('CRITICAL: No reference syllabus layout found.'); return; }
+
+            const difficulty = document.getElementById('cfg-difficulty').value;
+            const length = document.getElementById('cfg-questions').value;
+            const time = document.getElementById('cfg-time').value;
+
+            logStatus("PARSING: Transforming PDF context elements into text strings...");
+            
+            const reader = new FileReader();
+            reader.readAsArrayBuffer(fileInput.files[0]);
+            reader.onload = async function() {
+                try {
+                    const apiKey = getActiveKey();
+                    const typedarray = new Uint8Array(this.result);
+                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    let text = "";
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const contents = await page.getTextContent();
+                        text += contents.items.map(it => it.str).join(" ") + "\n";
+                    }
+                    
+                    const cleanedContent = sanitizePayloadText(text).substring(0, 15000);
+                    logStatus("TRANSMITTING: Forwarding request to AI gateway...");
+
+                    const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+                    
+                    const systemInstruction = `You are a professional Cambridge test design engine. Based on the syllabus notes below, create an exam layout. 
+                    Difficulty: ${difficulty}, Length: ${length}, Duration: ${time}. 
+                    Provide the clear questions followed by a complete Mark Scheme breakdown at the bottom text profile. Do not output markdown code-block enclosures.`;
+
+                    const response = await fetch(apiEndpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: `${systemInstruction}\n\nSyllabus Reference Material:\n${cleanedContent}` }] }]
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        const errorDetails = await response.text();
+                        throw new Error(`Endpoint response code ${response.status}: ${errorDetails}`);
+                    }
+
+                    const jsonData = await response.json();
+                    if(jsonData.candidates && jsonData.candidates[0].content?.parts?.[0]?.text) {
+                        generatedExamText = jsonData.candidates[0].content.parts[0].text;
+                        outputDisplay.textContent = generatedExamText;
+                        downloadZone.style.display = "block";
+                    } else {
+                        throw new Error("Response body is missing content data layout blocks.");
+                    }
+                } catch(err) { 
+                    logStatus(`System Fault: ${err.message}`); 
+                    console.error(err); 
+                }
+            };
+        });
+
+        // --- TASK 2: BATCH SCRIPT EVALUATION LOGIC ---
+        document.getElementById('teacher-batch-btn').addEventListener('click', async () => {
+            const fileInput = document.getElementById('teacher-batch-files');
+            if(fileInput.files.length === 0) { logStatus('CRITICAL: Batch folder contains zero file items.'); return; }
+
+            outputDisplay.textContent = "";
+            logStatus(`BATCH EVALUATION ACTIVE: Cycling processing routines over ${fileInput.files.length} uploads...\n`);
+
+            for(let file of fileInput.files) {
+                outputDisplay.textContent += `\n=========================================\n🔎 PROCESSING ATTACHMENT: ${file.name}\n=========================================\n`;
+                
+                try {
+                    if (file.type === "application/pdf") {
+                        const text = await new Promise((resolve) => {
+                            const fr = new FileReader();
+                            fr.readAsArrayBuffer(file);
+                            fr.onload = async function() {
+                                const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
+                                let extracted = "";
+                                for(let i=1; i<=pdf.numPages; i++) {
+                                    const p = await pdf.getPage(i);
+                                    const c = await p.getTextContent();
+                                    extracted += c.items.map(it => it.str).join(" ") + "\n";
+                                }
+                                resolve(extracted);
+                            }
+                        });
+                        await appendTextEvaluation(text, file.name);
+                    } else {
+                        const dataUrlText = await new Promise((res) => {
+                            const r = new FileReader();
+                            r.readAsDataURL(file);
+                            r.onloadend = () => res(r.result.split(',')[1]);
+                        });
+                        await appendImageEvaluation(dataUrlText, file.type, file.name);
+                    }
+                } catch(err) {
+                    outputDisplay.textContent += `[Execution error processing document item]: ${err.message}\n`;
+                }
+            }
+            outputDisplay.textContent += "\n\n🚀 [STATUS REPORT] All batch items have been fully processed and graded.";
+        });
+
+        async function appendTextEvaluation(text, name) {
+            const apiKey = getActiveKey();
+            const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+            const cleanedText = sanitizePayloadText(text).substring(0, 15000);
+            
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: "You are a rigid Cambridge Examiner. Look at this text-extracted student script answers. Check it against standard CIE marking constraints. Point out exactly where they lost marks, what keyword was missing, and give a score breakdown layout." }, { text: cleanedText }] }]
+                })
+            });
+            if(!response.ok) throw new Error(`HTTP ${response.status}`);
+            const resJson = await response.json();
+            outputDisplay.textContent += resJson.candidates[0].content.parts[0].text + "\n";
+        }
+
+        async function appendImageEvaluation(base64, mime, name) {
+            const apiKey = getActiveKey();
+            const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+            
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: "You are a rigid Cambridge Examiner. Look at this handwriting scan student exam answers image. Check it against standard CIE marking constraints. Point out exactly where they lost marks, what keyword was missing, and give a score breakdown layout." }, { inlineData: { mimeType: mime || "image/jpeg", data: base64 } }] }]
+                })
+            });
+            if(!response.ok) throw new Error(`HTTP ${response.status}`);
+            const resJson = await response.json();
+            outputDisplay.textContent += resJson.candidates[0].content.parts[0].text + "\n";
+        }
+
+        // Export Print Engine Layout
+        downloadPdfBtn.addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+            doc.setFont("times", "normal"); doc.setFontSize(11);
+            
+            const lines = doc.splitTextToSize(generatedExamText, 170);
+            let cursor = 20;
+
+            for(let line of lines) {
+                if (cursor > 275) { doc.addPage(); cursor = 20; }
+                doc.text(line, 20, cursor);
+                cursor += 6.5;
+            }
+            doc.save("Atlas-Teacher-Assessment-Package.pdf");
+        });
+
+        function logStatus(msg) { outputDisplay.textContent = `[ATLAS LOG] ${msg}`; }
+    </script>
+</body>
+</html>
