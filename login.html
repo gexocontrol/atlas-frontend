@@ -1001,9 +1001,61 @@ function togglePassword() {
 ═══════════════════════════════════════ */
 const BACKEND_URL = 'https://web-production-6f8843.up.railway.app';
 
-function handleLogin(e) {
+async function handleLogin(e) {
     e.preventDefault();
-    window.location.href = 'student_dashboard.html';
+    hideError();
+
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!email)               { showError('Please enter your email address.'); return; }
+    if (!email.includes('@')) { showError('Please enter a valid email address.'); return; }
+    if (!password)            { showError('Please enter your password.'); return; }
+
+    const btn   = document.getElementById('login-btn');
+    const label = document.getElementById('btn-label');
+    btn.disabled      = true;
+    label.textContent = 'Signing in…';
+
+    const destinations = {
+        student: 'student_dashboard.html',
+        teacher: 'teacher_dashboard.html',
+        school:  'school_dashboard.html',
+    };
+
+    try {
+        const res  = await fetch(`${BACKEND_URL}/api/auth/login`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+
+        if (res.ok && data.access_token) {
+            const user = { email, name: data.name || email, role: data.role || 'student', token: data.access_token };
+            localStorage.setItem('atlas_user',  JSON.stringify(user));
+            localStorage.setItem('atlas_token', data.access_token);
+            window.location.href = destinations[data.role] || 'student_dashboard.html';
+            return;
+        }
+
+        showError(data.error || 'Incorrect email or password.');
+    } catch (_) {
+        // Backend unreachable — check for a locally registered account
+        try {
+            const accounts = JSON.parse(localStorage.getItem('atlas_accounts') || '[]');
+            const match    = accounts.find(a => a.email === email);
+            if (match) {
+                localStorage.setItem('atlas_user', JSON.stringify(match));
+                window.location.href = destinations[match.role] || 'student_dashboard.html';
+                return;
+            }
+        } catch (_2) {}
+        showError('Cannot reach the server. Please check your connection.');
+    } finally {
+        btn.disabled      = false;
+        label.textContent = 'Log in';
+    }
 }
 
 function loginWithGoogle() {
