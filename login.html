@@ -615,6 +615,7 @@
         #screen-login > * { animation: none !important; opacity: 1 !important; transform: none !important; }
     }
     </style>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -725,7 +726,7 @@
                 <span id="su-error-msg"></span>
             </div>
 
-            <button class="btn-google" onclick="loginWithGoogle()">
+            <button class="btn-google" onclick="signupWithGoogle()">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                     <path d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18Z" fill="#4285F4"/>
                     <path d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.01c-.72.49-1.63.86-2.7.86a4.69 4.69 0 0 1-4.42-3.24H1.9v2.07A8 8 0 0 0 8.98 17Z" fill="#34A853"/>
@@ -1057,8 +1058,75 @@ async function handleLogin(e) {
     }
 }
 
-function loginWithGoogle() {
-    window.location.href = `${BACKEND_URL}/api/auth/google`;
+/* ═══════════════════════════════════════
+   GOOGLE SIGN-IN (GIS)
+═══════════════════════════════════════ */
+const GOOGLE_CLIENT_ID = '248120359997-d2uamu7l8bum10qq7om31ksltiqu7cnj.apps.googleusercontent.com';
+let _googleMode = 'login';
+let _gsiReady   = false;
+
+function loginWithGoogle()  { triggerGoogle('login');  }
+function signupWithGoogle() { triggerGoogle('signup'); }
+
+function triggerGoogle(mode) {
+    _googleMode = mode;
+    const errFn = mode === 'login' ? showError : showSuError;
+    if (!window.google?.accounts?.id) {
+        errFn('Google Sign-In is loading — please wait a moment and try again.');
+        return;
+    }
+    if (!_gsiReady) {
+        google.accounts.id.initialize({
+            client_id:             GOOGLE_CLIENT_ID,
+            callback:              handleGoogleCredential,
+            auto_select:           false,
+            cancel_on_tap_outside: true,
+            itp_support:           true,
+        });
+        _gsiReady = true;
+    }
+    google.accounts.id.prompt(notification => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            errFn('Google Sign-In couldn\'t open — please try again or use email sign-in below.');
+        }
+    });
+}
+
+function handleGoogleCredential(response) {
+    const payload = decodeGoogleJwt(response.credential);
+    const errFn   = _googleMode === 'login' ? showError : showSuError;
+    if (!payload?.email) {
+        errFn('Couldn\'t read your Google account info. Please try again.');
+        return;
+    }
+    const email = payload.email;
+    const name  = payload.name
+        || [payload.given_name, payload.family_name].filter(Boolean).join(' ')
+        || email.split('@')[0];
+
+    if (_googleMode === 'login') {
+        const accounts = JSON.parse(localStorage.getItem('atlas_accounts') || '[]');
+        const existing = accounts.find(a => a.email === email);
+        const role     = existing?.role || 'student';
+        const user     = { email, name, role, googleSignIn: true };
+        localStorage.setItem('atlas_user', JSON.stringify(user));
+        const dest = {
+            student: 'student_dashboard.html',
+            teacher: 'teacher_dashboard.html',
+            school:  'school_dashboard.html',
+        };
+        window.location.href = dest[role] || 'student_dashboard.html';
+    } else {
+        _suData = { name, email, googleSignIn: true };
+        showScreen('role');
+    }
+}
+
+function decodeGoogleJwt(token) {
+    try {
+        const b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+        return JSON.parse(atob(b64 + '='.repeat((4 - b64.length % 4) % 4)));
+    } catch { return null; }
 }
 
 function showError(msg) {
@@ -1149,6 +1217,21 @@ async function handleRoleSelect() {
         teacher: 'teacher_dashboard.html',
         school:  'school_dashboard.html',
     };
+
+    // ── Google sign-in: no password to register ───────────────────
+    if (_suData.googleSignIn) {
+        const user = { email: _suData.email, name: _suData.name, role: _selectedRole, googleSignIn: true };
+        localStorage.setItem('atlas_user', JSON.stringify(user));
+        try {
+            const accounts = JSON.parse(localStorage.getItem('atlas_accounts') || '[]');
+            const idx = accounts.findIndex(a => a.email === _suData.email);
+            if (idx >= 0) accounts[idx] = { ...accounts[idx], ...user };
+            else          accounts.push(user);
+            localStorage.setItem('atlas_accounts', JSON.stringify(accounts));
+        } catch (_) {}
+        window.location.href = destinations[_selectedRole] || 'student_dashboard.html';
+        return;
+    }
 
     // ── POST to backend (saves to Supabase) ──────────────────────
     try {
