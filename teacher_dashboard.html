@@ -158,6 +158,15 @@
         font-size:0.72rem; font-weight:800; color:#fff;
         font-family:'Inter',sans-serif; flex-shrink:0;
     }
+    .nav-upgrade-btn {
+        display:inline-flex; align-items:center; gap:6px;
+        padding:7px 15px; border-radius:99px;
+        background:#1A1814; color:#F4F1EA;
+        font-family:'Inter',sans-serif; font-size:0.8rem; font-weight:700;
+        text-decoration:none; white-space:nowrap; letter-spacing:-0.1px;
+        transition:opacity 0.2s, transform 0.15s;
+    }
+    .nav-upgrade-btn:hover { opacity:0.82; transform:translateY(-1px); }
     .logout-btn {
         width:36px; height:36px; border-radius:10px;
         border:1px solid var(--border); background:transparent;
@@ -408,6 +417,12 @@
             <div class="nav-role-chip">Teacher</div>
         </div>
         <div class="nav-right">
+            <a href="pricing.html" class="nav-upgrade-btn" id="upgrade-btn">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" style="flex-shrink:0">
+                    <polyline points="4 15 12 7 20 15" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="upgrade-label">Upgrade Plan</span>
+            </a>
             <div class="nav-user-pill" id="nav-user-pill">
                 <div class="nav-avatar" id="nav-avatar">T</div>
                 <span id="nav-name">Teacher</span>
@@ -550,6 +565,14 @@
             document.getElementById('hero-name').textContent = first;
             document.getElementById('nav-name').textContent = first;
             document.getElementById('nav-avatar').textContent = first.charAt(0).toUpperCase();
+            const upgradeBtn = document.getElementById('upgrade-btn');
+            if (upgradeBtn) {
+                upgradeBtn.href = 'pricing.html?role=' + (u.role || 'teacher');
+                if (u.plan === 'pro' || u.plan === 'plus') {
+                    const lbl = upgradeBtn.querySelector('.upgrade-label');
+                    if (lbl) lbl.textContent = 'Manage Plan';
+                }
+            }
         } catch (_) {}
 
         // Skeleton → app
