@@ -1207,7 +1207,7 @@ async function handleRoleSelect() {
             else          accounts.push(user);
             localStorage.setItem('atlas_accounts', JSON.stringify(accounts));
         } catch (_) {}
-        window.location.href = destinations[_selectedRole] || 'student_dashboard.html';
+        window.location.href = 'pricing.html?role=' + _selectedRole;
         return;
     }
 
