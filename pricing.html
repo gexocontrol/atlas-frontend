@@ -78,7 +78,7 @@
         position: relative;
         z-index: 1;
         text-align: center;
-        padding: 80px 24px 52px;
+        padding: 72px 24px 48px;
     }
 
     .hero-eyebrow {
@@ -94,34 +94,34 @@
         border: 1px solid var(--border);
         border-radius: 99px;
         padding: 5px 14px;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
     }
 
     .hero-title {
-        font-size: clamp(2.2rem, 5.5vw, 3.4rem);
+        font-size: clamp(2rem, 5vw, 3.2rem);
         font-weight: 800;
-        letter-spacing: -1.5px;
-        line-height: 1.07;
+        letter-spacing: -1.4px;
+        line-height: 1.08;
         color: var(--text);
-        margin-bottom: 16px;
+        margin-bottom: 12px;
     }
 
     .hero-sub {
-        font-size: 1.05rem;
+        font-size: 1rem;
         color: var(--text-2);
         font-weight: 400;
         line-height: 1.65;
-        max-width: 380px;
+        max-width: 360px;
         margin: 0 auto;
     }
 
-    /* ── Billing toggle ── */
+    /* ── Toggle ── */
     .toggle-wrap {
         position: relative;
         z-index: 1;
         display: flex;
         justify-content: center;
-        padding-bottom: 56px;
+        padding-bottom: 52px;
     }
 
     .toggle-track {
@@ -180,10 +180,15 @@
 
     .cards-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 340px));
+        justify-content: center;
         gap: 20px;
-        max-width: 1080px;
+        max-width: 740px;
         margin: 0 auto;
+    }
+
+    .cards-grid.solo {
+        grid-template-columns: minmax(0, 420px);
     }
 
     .card {
@@ -199,9 +204,7 @@
     }
 
     .card:nth-child(1) { animation-delay: 0.08s; }
-    .card:nth-child(2) { animation-delay: 0.15s; }
-    .card:nth-child(3) { animation-delay: 0.22s; }
-    .card:nth-child(4) { animation-delay: 0.28s; }
+    .card:nth-child(2) { animation-delay: 0.18s; }
 
     @keyframes card-rise {
         from { opacity: 0; transform: translateY(24px); }
@@ -215,7 +218,6 @@
 
     .card:hover { box-shadow: 0 12px 40px rgba(26,24,20,0.10); transform: translateY(-3px); }
 
-    /* Pro card */
     .card-pro {
         border: 1.5px solid var(--text);
         box-shadow: 0 20px 60px rgba(26,24,20,0.15);
@@ -228,7 +230,13 @@
         transform: translateY(-15px);
     }
 
-    /* Popular badge */
+    /* Solo pro card: no elevation */
+    .cards-grid.solo .card-pro {
+        transform: none;
+        animation-name: card-rise;
+    }
+    .cards-grid.solo .card-pro:hover { transform: translateY(-3px); }
+
     .popular-badge {
         display: inline-flex;
         align-items: center;
@@ -245,7 +253,6 @@
         align-self: flex-start;
     }
 
-    /* Plan header */
     .plan-name {
         font-size: 1.05rem;
         font-weight: 800;
@@ -261,7 +268,6 @@
         margin-bottom: 22px;
     }
 
-    /* Price block */
     .price-block { margin-bottom: 20px; }
 
     .price-row { display: flex; align-items: flex-start; line-height: 1; }
@@ -304,10 +310,8 @@
         margin-top: 8px;
     }
 
-    /* Divider */
     .card-divider { border: none; border-top: 1px solid var(--border); margin: 4px 0 20px; }
 
-    /* Features */
     .features {
         list-style: none;
         display: flex;
@@ -339,7 +343,6 @@
         margin-top: 1px;
     }
 
-    /* CTA buttons */
     .btn-cta {
         display: flex;
         align-items: center;
@@ -380,7 +383,7 @@
         transform: translateY(-1px);
     }
 
-    /* Footer note */
+    /* ── Footer ── */
     .footer-note {
         position: relative;
         z-index: 1;
@@ -391,55 +394,106 @@
         line-height: 1.7;
     }
 
-    .footer-note a {
+    /* ── Free plan modal ── */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(26,24,20,0.45);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s;
+    }
+
+    .modal-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .modal {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 40px 36px 32px;
+        max-width: 420px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 24px 64px rgba(26,24,20,0.20);
+        transform: scale(0.95) translateY(10px);
+        transition: transform 0.25s cubic-bezier(0.34,1.2,0.64,1);
+    }
+
+    .modal-overlay.show .modal {
+        transform: scale(1) translateY(0);
+    }
+
+    .modal-check {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+
+    .modal-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        color: var(--text);
+        margin-bottom: 10px;
+    }
+
+    .modal-body {
+        font-size: 0.875rem;
         color: var(--text-2);
-        font-weight: 600;
-        text-decoration: underline;
-        text-underline-offset: 2px;
+        line-height: 1.65;
+        margin-bottom: 28px;
+    }
+
+    .modal-cta {
+        margin-bottom: 12px;
+        text-decoration: none;
+    }
+
+    .modal-dismiss {
+        display: block;
+        width: 100%;
+        border: none;
+        background: none;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.82rem;
+        color: var(--text-3);
+        cursor: pointer;
+        padding: 8px;
         transition: color 0.2s;
     }
-    .footer-note a:hover { color: var(--text); }
+    .modal-dismiss:hover { color: var(--text-2); }
 
-    /* Toast */
-    .toast {
-        position: fixed;
-        bottom: 32px;
-        left: 50%;
-        transform: translateX(-50%) translateY(10px);
-        background: var(--text);
-        color: var(--bg);
-        font-size: 0.82rem;
-        font-weight: 600;
-        padding: 10px 22px;
-        border-radius: 99px;
-        opacity: 0;
-        transition: opacity 0.2s, transform 0.2s;
-        z-index: 999;
-        white-space: nowrap;
-        pointer-events: none;
-        box-shadow: 0 4px 20px rgba(26,24,20,0.20);
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    /* Responsive */
-    @media (max-width: 1020px) {
-        .cards-grid { grid-template-columns: repeat(2, 1fr); max-width: 640px; }
-        .card-pro { transform: none; animation-name: card-rise; }
-        .card-pro:hover { transform: translateY(-3px); }
-    }
-
-    @media (max-width: 580px) {
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
         .nav { padding: 0 20px; }
-        .hero { padding: 56px 20px 36px; }
+        .hero { padding: 52px 20px 36px; }
         .toggle-btn { padding: 7px 14px; font-size: 0.82rem; }
         .save-chip { display: none; }
         .cards-wrap { padding: 0 16px 56px; }
-        .cards-grid { grid-template-columns: 1fr; max-width: 400px; }
-        .footer-note { padding-bottom: 48px; }
+        .cards-grid, .cards-grid.solo { grid-template-columns: 1fr; max-width: 400px; }
+        .card-pro { transform: none; animation-name: card-rise; }
+        .card-pro:hover { transform: translateY(-3px); }
+        .modal { padding: 32px 24px 24px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
         .card { animation: none !important; opacity: 1 !important; }
+        .modal { transition: none !important; }
     }
     </style>
 </head>
@@ -450,140 +504,216 @@
         <img src="atlas-logo.png" alt="Atlas" class="brand-logo">
         <span class="brand-name">ATLAS</span>
     </a>
-    <a href="student_dashboard.html" class="nav-back">← Dashboard</a>
+    <a href="student_dashboard.html" class="nav-back" id="nav-back">← Dashboard</a>
 </nav>
 
 <section class="hero">
     <div class="hero-eyebrow">Pricing</div>
-    <h1 class="hero-title">Simple, transparent pricing</h1>
-    <p class="hero-sub">Start free, upgrade when you're ready. No hidden fees.</p>
+    <h1 class="hero-title" id="page-title">Plans</h1>
+    <p class="hero-sub" id="page-sub">Choose the plan that fits your needs.</p>
 </section>
 
 <div class="toggle-wrap">
     <div class="toggle-track">
-        <button class="toggle-btn" data-period="weekly"  onclick="setPeriod('weekly')">Weekly</button>
+        <button class="toggle-btn" data-period="weekly" id="btn-weekly" onclick="setPeriod('weekly')">Weekly</button>
         <button class="toggle-btn active" data-period="monthly" onclick="setPeriod('monthly')">Monthly</button>
-        <button class="toggle-btn" data-period="yearly"  onclick="setPeriod('yearly')">
-            Yearly <span class="save-chip">Save up to 34%</span>
+        <button class="toggle-btn" data-period="yearly" onclick="setPeriod('yearly')">
+            Yearly <span class="save-chip" id="save-chip-txt">Save up to 28%</span>
         </button>
     </div>
 </div>
 
 <div class="cards-wrap">
-    <div class="cards-grid">
+    <div class="cards-grid" id="cards-grid">
 
         <!-- FREE -->
         <div class="card" id="card-free">
             <div class="plan-name">Free</div>
-            <p class="plan-desc">Start exploring AI exam tools at no cost.</p>
+            <p class="plan-desc" id="free-desc">Start exploring at no cost.</p>
             <div class="price-block">
                 <div class="price-row">
-                    <span class="price-currency" id="cur-free">$</span>
-                    <span class="price-amount"   id="amt-free">0</span>
+                    <span class="price-currency">$</span>
+                    <span class="price-amount">0</span>
                 </div>
-                <div class="price-period" id="per-free">/ month</div>
-                <div class="savings-badge" id="sav-free"></div>
+                <div class="price-period">/ month</div>
             </div>
             <hr class="card-divider">
-            <ul class="features">
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>10 operations per month</li>
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Basic AI analysis</li>
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Community support</li>
-            </ul>
-            <a href="#" class="btn-cta" onclick="showToast('Coming soon — stay tuned!'); return false;">Get Started</a>
-        </div>
-
-        <!-- PLUS -->
-        <div class="card" id="card-plus">
-            <div class="plan-name">Plus</div>
-            <p class="plan-desc">For students ready to level up their exam performance.</p>
-            <div class="price-block">
-                <div class="price-row">
-                    <span class="price-currency" id="cur-plus">$</span>
-                    <span class="price-amount"   id="amt-plus">11.99</span>
-                </div>
-                <div class="price-period" id="per-plus">/ month</div>
-                <div class="savings-badge" id="sav-plus"></div>
-            </div>
-            <hr class="card-divider">
-            <ul class="features">
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>120 operations per month</li>
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Progress reports</li>
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Priority processing</li>
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>PDF export</li>
-            </ul>
-            <a href="#" class="btn-cta" onclick="showToast('Coming soon — stay tuned!'); return false;">Choose Plus</a>
+            <ul class="features" id="free-features"></ul>
+            <button class="btn-cta" onclick="selectFree()">Get Started Free</button>
         </div>
 
         <!-- PRO -->
         <div class="card card-pro" id="card-pro">
-            <div class="popular-badge">
+            <div class="popular-badge" id="popular-badge">
                 <svg width="6" height="6" viewBox="0 0 6 6" fill="none"><circle cx="3" cy="3" r="3" fill="rgba(244,241,234,0.8)"/></svg>
-                Most Popular
+                Recommended
             </div>
-            <div class="plan-name">Pro</div>
-            <p class="plan-desc">For power users who want the full Atlas experience.</p>
+            <div class="plan-name" id="pro-name">Pro</div>
+            <p class="plan-desc" id="pro-desc">The full Atlas experience.</p>
             <div class="price-block">
                 <div class="price-row">
                     <span class="price-currency" id="cur-pro">$</span>
-                    <span class="price-amount"   id="amt-pro">24.99</span>
+                    <span class="price-amount" id="amt-pro">8.99</span>
                 </div>
                 <div class="price-period" id="per-pro">/ month</div>
                 <div class="savings-badge" id="sav-pro"></div>
             </div>
             <hr class="card-divider">
-            <ul class="features">
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>350 operations per month</li>
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Everything in Plus</li>
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Advanced analytics</li>
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Fastest processing</li>
-            </ul>
-            <a href="#" class="btn-cta btn-cta-pro" onclick="showToast('Coming soon — stay tuned!'); return false;">Choose Pro</a>
-        </div>
-
-        <!-- SCHOOL -->
-        <div class="card" id="card-school">
-            <div class="plan-name">School</div>
-            <p class="plan-desc">For institutions managing multiple classes and students.</p>
-            <div class="price-block">
-                <div class="price-row">
-                    <span class="price-currency" id="cur-school">$</span>
-                    <span class="price-amount"   id="amt-school">79</span>
-                </div>
-                <div class="price-period" id="per-school">/ month</div>
-                <div class="savings-badge" id="sav-school"></div>
-            </div>
-            <hr class="card-divider">
-            <ul class="features">
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>1,500 operations per month</li>
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Bulk exam grading (up to 30)</li>
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Full performance reports</li>
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Admin dashboard</li>
-                <li><span class="ck"><svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Up to 50 users</li>
-            </ul>
-            <a href="#" class="btn-cta" id="cta-school" onclick="showToast('Coming soon — stay tuned!'); return false;">Choose School</a>
+            <ul class="features" id="pro-features"></ul>
+            <button class="btn-cta btn-cta-pro" id="pro-cta" onclick="selectPro()">Get Pro</button>
         </div>
 
     </div>
 </div>
 
 <p class="footer-note">
-    All plans include a 14-day free trial. No credit card required to get started.<br>
-    Need something custom? <a href="#">Contact us</a>
+    All plans include a 14-day free trial. No credit card required to start.<br>
+    Questions? <a href="#" style="color:var(--text-2);font-weight:600;text-decoration:underline;text-underline-offset:2px;">Contact us</a>
 </p>
 
+<!-- Free plan modal -->
+<div class="modal-overlay" id="free-modal" onclick="handleOverlayClick(event)">
+    <div class="modal">
+        <div class="modal-check">
+            <svg width="22" height="17" viewBox="0 0 24 18" fill="none">
+                <path d="M2 9l7 7L22 2" stroke="#F4F1EA" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h2 class="modal-title">You're on the Free Plan</h2>
+        <p class="modal-body" id="modal-body">
+            You have access to 10 operations per month with basic AI analysis. Upgrade anytime to unlock more.
+        </p>
+        <a href="student_dashboard.html" class="btn-cta btn-cta-pro modal-cta" id="modal-cta">
+            Continue to Dashboard →
+        </a>
+        <button class="modal-dismiss" onclick="closeModal()">View other plans</button>
+    </div>
+</div>
+
 <script>
-const PLANS = {
-    free:   { weekly: 0,    monthly: 0,     yearly: 0,   savings: null },
-    plus:   { weekly: 3.99, monthly: 11.99, yearly: 99,  savings: 'Save 31%' },
-    pro:    { weekly: 7.99, monthly: 24.99, yearly: 199, savings: 'Save 34%' },
-    school: { weekly: null, monthly: 79,    yearly: 799, savings: 'Save 16%' },
+/* ── Role config ── */
+const ROLE_CONFIG = {
+    student: {
+        title:     'Student Plans',
+        sub:       'Pick the right plan for your exam journey.',
+        dashboard: 'student_dashboard.html',
+        showFree:  true,
+        hasWeekly: true,
+        saveChip:  'Save up to 27%',
+        free: {
+            desc:     'Start exploring AI exam tools at no cost.',
+            features: ['10 operations per month', 'Basic AI analysis', 'Community support'],
+        },
+        pro: {
+            desc:     'Everything you need to ace your exams.',
+            weekly: 4.99, monthly: 8.99, yearly: 79,
+            savings:  'Save 27%',
+            cta:      'Get Student Pro',
+            features: ['300 operations per month', 'All features unlocked', 'Priority processing', 'PDF export'],
+        },
+    },
+    teacher: {
+        title:     'Teacher Plans',
+        sub:       'Choose the tools that power your classroom.',
+        dashboard: 'teacher_dashboard.html',
+        showFree:  true,
+        hasWeekly: true,
+        saveChip:  'Save up to 28%',
+        free: {
+            desc:     'Start creating and analysing exams at no cost.',
+            features: ['10 operations per month', 'Basic AI analysis', 'Community support'],
+        },
+        pro: {
+            desc:     'The complete toolkit for teaching excellence.',
+            weekly: 7.99, monthly: 14.99, yearly: 129,
+            savings:  'Save 28%',
+            cta:      'Get Teacher Pro',
+            features: ['400 operations per month', 'All features unlocked', 'Priority processing', 'PDF export'],
+        },
+    },
+    school: {
+        title:     'School Plans',
+        sub:       'Empower your whole institution with Atlas Pro.',
+        dashboard: 'school_dashboard.html',
+        showFree:  false,
+        hasWeekly: false,
+        saveChip:  'Save 16%',
+        pro: {
+            desc:     'Manage your entire institution with Atlas.',
+            weekly: null, monthly: 99, yearly: 999,
+            savings:  'Save 16%',
+            cta:      'Get School Pro',
+            features: [
+                '1,500 operations per month',
+                'Up to 50 users',
+                'Bulk grading (up to 30 at once)',
+                'Full performance reports',
+                'Admin dashboard',
+            ],
+        },
+    },
 };
 
 const PERIOD_LABEL = { weekly: '/ week', monthly: '/ month', yearly: '/ year' };
+const CHECK_SVG = `<svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 let period = 'monthly';
+let role   = 'student';
 
+/* ── Init ── */
+window.addEventListener('DOMContentLoaded', function () {
+    const param = new URLSearchParams(window.location.search).get('role') || '';
+    role = ROLE_CONFIG[param] ? param : 'student';
+    const cfg = ROLE_CONFIG[role];
+
+    /* Heading & sub */
+    document.getElementById('page-title').textContent = cfg.title;
+    document.getElementById('page-sub').textContent   = cfg.sub;
+    document.getElementById('save-chip-txt').textContent = cfg.saveChip;
+
+    /* Nav back link */
+    document.getElementById('nav-back').href = cfg.dashboard;
+
+    /* Weekly toggle visibility */
+    if (!cfg.hasWeekly) {
+        document.getElementById('btn-weekly').style.display = 'none';
+    }
+
+    /* Free card */
+    if (!cfg.showFree) {
+        document.getElementById('card-free').style.display = 'none';
+        document.getElementById('cards-grid').classList.add('solo');
+        document.getElementById('popular-badge').style.display = 'none';
+    } else {
+        document.getElementById('free-desc').textContent = cfg.free.desc;
+        renderFeatures('free-features', cfg.free.features);
+    }
+
+    /* Pro card */
+    document.getElementById('pro-name').textContent = role === 'school' ? 'School Pro' : 'Pro';
+    document.getElementById('pro-desc').textContent = cfg.pro.desc;
+    document.getElementById('pro-cta').textContent  = cfg.pro.cta;
+    renderFeatures('pro-features', cfg.pro.features);
+
+    /* Modal dashboard link */
+    document.getElementById('modal-cta').href = cfg.dashboard;
+
+    /* Apply transitions then update */
+    document.querySelectorAll('.price-currency, .price-amount, .price-period').forEach(el => {
+        el.style.transition = 'opacity 0.14s ease, transform 0.14s ease';
+    });
+
+    updatePro();
+});
+
+/* ── Render feature list ── */
+function renderFeatures(id, features) {
+    document.getElementById(id).innerHTML = features
+        .map(f => `<li><span class="ck">${CHECK_SVG}</span>${f}</li>`)
+        .join('');
+}
+
+/* ── Period toggle ── */
 function setPeriod(p) {
     period = p;
     document.querySelectorAll('.toggle-btn').forEach(btn => {
@@ -592,82 +722,77 @@ function setPeriod(p) {
     fadeAndUpdate();
 }
 
-function fmt(n) {
-    if (n === 0) return '0';
-    return Number.isInteger(n) ? String(n) : n.toFixed(2);
-}
-
 function fadeAndUpdate() {
-    const priceEls = document.querySelectorAll('.price-currency, .price-amount, .price-period');
-    priceEls.forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(5px)'; });
-
+    const els = document.querySelectorAll('#cur-pro, #amt-pro, #per-pro');
+    els.forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(5px)'; });
     setTimeout(() => {
-        updateAll();
-        priceEls.forEach(el => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; });
+        updatePro();
+        els.forEach(el => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; });
     }, 120);
 }
 
-function updateAll() {
-    for (const plan of ['free', 'plus', 'pro', 'school']) {
-        const data  = PLANS[plan];
-        const price = data[period];
-        const curEl = document.getElementById('cur-' + plan);
-        const amtEl = document.getElementById('amt-' + plan);
-        const perEl = document.getElementById('per-' + plan);
-        const savEl = document.getElementById('sav-' + plan);
+function updatePro() {
+    const cfg   = ROLE_CONFIG[role];
+    const price = cfg.pro[period];
+    const curEl = document.getElementById('cur-pro');
+    const amtEl = document.getElementById('amt-pro');
+    const perEl = document.getElementById('per-pro');
+    const savEl = document.getElementById('sav-pro');
 
-        if (price === null) {
-            curEl.style.visibility = 'hidden';
-            amtEl.textContent      = '—';
-            amtEl.style.letterSpacing = '-1px';
-            perEl.textContent      = 'contact us for weekly pricing';
-            savEl.style.display    = 'none';
-            document.getElementById('cta-school').textContent = 'Contact Us';
+    if (price === null) {
+        curEl.style.visibility = 'hidden';
+        amtEl.textContent = '—';
+        perEl.textContent = '';
+        savEl.style.display = 'none';
+    } else {
+        curEl.style.visibility = 'visible';
+        amtEl.textContent = Number.isInteger(price) ? String(price) : price.toFixed(2);
+        perEl.textContent = PERIOD_LABEL[period];
+        if (period === 'yearly' && cfg.pro.savings) {
+            savEl.textContent   = cfg.pro.savings;
+            savEl.style.display = 'inline-flex';
         } else {
-            curEl.style.visibility = 'visible';
-            amtEl.textContent      = fmt(price);
-            amtEl.style.letterSpacing = '';
-            perEl.textContent      = PERIOD_LABEL[period];
-
-            if (plan === 'school') {
-                document.getElementById('cta-school').textContent = 'Choose School';
-            }
-
-            if (savEl) {
-                if (period === 'yearly' && data.savings) {
-                    savEl.textContent   = data.savings;
-                    savEl.style.display = 'inline-flex';
-                } else {
-                    savEl.style.display = 'none';
-                }
-            }
+            savEl.style.display = 'none';
         }
     }
 }
 
-/* Apply CSS transitions to price elements */
-document.querySelectorAll('.price-currency, .price-amount, .price-period').forEach(el => {
-    el.style.transition = 'opacity 0.14s ease, transform 0.14s ease';
-});
-
-/* Toast */
-function showToast(msg) {
-    const existing = document.querySelector('.toast');
-    if (existing) existing.remove();
-    const t = document.createElement('div');
-    t.className   = 'toast';
-    t.textContent = msg;
-    document.body.appendChild(t);
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => t.classList.add('show'));
-    });
-    setTimeout(() => {
-        t.classList.remove('show');
-        setTimeout(() => t.remove(), 300);
-    }, 2200);
+/* ── Plan selection ── */
+function selectFree() {
+    const user = JSON.parse(localStorage.getItem('atlas_user') || '{}');
+    user.plan = 'free';
+    localStorage.setItem('atlas_user', JSON.stringify(user));
+    showFreeModal();
 }
 
-updateAll();
+function selectPro() {
+    const cfg   = ROLE_CONFIG[role];
+    const price = cfg.pro[period];
+    const user  = JSON.parse(localStorage.getItem('atlas_user') || '{}');
+    user.plan      = 'pro';
+    user.billing   = period;
+    user.planPrice = price;
+    user.planRole  = role;
+    localStorage.setItem('atlas_user', JSON.stringify(user));
+    window.location.href = 'payment.html';
+}
+
+/* ── Free modal ── */
+function showFreeModal() {
+    document.getElementById('free-modal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    document.getElementById('free-modal').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+    if (e.target === e.currentTarget) closeModal();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
 </body>
 </html>
