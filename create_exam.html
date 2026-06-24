@@ -543,6 +543,10 @@
             formData.append('file', selectedFile);
             formData.append('subject', subject);
             formData.append('num_questions', numQuestions);
+            const _u = JSON.parse(localStorage.getItem('atlas_user') || '{}');
+            formData.append('user_email', _u.email || '');
+            formData.append('plan',       _u.plan  || 'free');
+            formData.append('role',       _u.role  || 'student');
 
             setProgress(35, 'Building exam...', 'AI is generating questions — this takes 15–30 seconds...');
 
@@ -553,6 +557,7 @@
 
             const data = await response.json();
 
+            if (response.status === 429) throw new Error((data.error || 'Monthly limit reached.') + ' Visit pricing.html to upgrade.');
             if (!response.ok || !data.success) {
                 throw new Error(data.error || `Server error (${response.status})`);
             }

@@ -643,6 +643,10 @@
             formData.append('difficulty', difficulty);
             formData.append('exam_type',  examType);
             formData.append('num_pages',  numPages);
+            const _u = JSON.parse(localStorage.getItem('atlas_user') || '{}');
+            formData.append('user_email', _u.email || '');
+            formData.append('plan',       _u.plan  || 'free');
+            formData.append('role',       _u.role  || 'teacher');
 
             setProgress(35, 'Building exam...', `Generating a ${difficulty.toLowerCase()} ${examType.toLowerCase()} exam — this takes 15–30 seconds...`);
 
@@ -652,6 +656,7 @@
             });
 
             const data = await response.json();
+            if (response.status === 429) throw new Error((data.error || 'Monthly limit reached.') + ' Visit pricing.html to upgrade.');
             if (!response.ok || !data.success) throw new Error(data.error || `Server error (${response.status})`);
 
             setProgress(100, 'Done!', 'Your exam is ready.');

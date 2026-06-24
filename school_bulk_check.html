@@ -610,6 +610,10 @@
         });
         if (_answerKey) fd.append('answer_key', _answerKey, _answerKey.name);
         fd.append('subject', document.getElementById('subject-select').value);
+        const _u = JSON.parse(localStorage.getItem('atlas_user') || '{}');
+        fd.append('user_email', _u.email || '');
+        fd.append('plan',       _u.plan  || 'free');
+        fd.append('role',       _u.role  || 'school');
 
         const total = _files.length;
         updateProgress(`Grading ${total} exam${total > 1 ? 's' : ''} — this may take a moment`);
@@ -617,6 +621,7 @@
         try {
             const res = await fetch(`${API}/api/bulk-check`, { method: 'POST', body: fd });
             const data = await res.json();
+            if (res.status === 429) throw new Error((data.error || 'Monthly limit reached.') + ' Visit pricing.html to upgrade.');
             if (!res.ok) throw new Error(data.error || 'Server error');
             showResults(data);
         } catch (err) {

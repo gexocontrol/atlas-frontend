@@ -905,6 +905,10 @@
             const formData    = new FormData();
             formData.append('student_name', studentName);
             formData.append('subject', subject);
+            const _u = JSON.parse(localStorage.getItem('atlas_user') || '{}');
+            formData.append('user_email', _u.email || '');
+            formData.append('plan',       _u.plan  || 'free');
+            formData.append('role',       _u.role  || 'student');
 
             if (uploadMode === 'pdf') {
                 if (!selectedFile) throw new Error('Please select a PDF file first.');
@@ -925,6 +929,7 @@
 
             const data = await response.json();
 
+            if (response.status === 429) throw new Error((data.error || 'Monthly limit reached.') + ' Visit pricing.html to upgrade.');
             if (!response.ok)  throw new Error(data.error || `Server error (${response.status})`);
             if (!data.success) throw new Error(data.error || 'Analysis failed. Please try again.');
 
