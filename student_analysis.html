@@ -812,14 +812,31 @@
     }
 
     // ── Photo / image handlers ──
-    document.getElementById('camera-input').addEventListener('change', function () {
-        addImages(Array.from(this.files));
-        this.value = ''; // reset so the same file can be recaptured
-    });
+
+    // Named handler so it can be re-attached to each cloned input.
+    // We clone-replace (not value='') because on iOS Safari, setting value=''
+    // on a capture input releases the underlying temp file — invalidating any
+    // blob URLs already created from those File objects.
+    function cameraChangeHandler() {
+        const files = Array.from(this.files);
+        if (!files.length) return;
+        files.forEach(file => {
+            if (!file.type.startsWith('image/')) return;
+            selectedImages.push({ file, url: URL.createObjectURL(file) });
+        });
+        renderThumbnails();
+        // Replace this input with a fresh clone so the label can re-trigger the
+        // camera immediately for the next page.
+        const clone = this.cloneNode(false); // copies id/accept/capture attributes
+        this.parentNode.replaceChild(clone, this);
+        clone.addEventListener('change', cameraChangeHandler);
+    }
+
+    document.getElementById('camera-input').addEventListener('change', cameraChangeHandler);
 
     document.getElementById('gallery-input').addEventListener('change', function () {
         addImages(Array.from(this.files));
-        this.value = '';
+        this.value = ''; // value='' is safe for gallery (no temp-file issue)
     });
 
     function addImages(files) {
