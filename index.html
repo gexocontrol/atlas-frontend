@@ -1147,9 +1147,10 @@ function handleSignup(event) {
     const email    = document.getElementById('su-email').value.trim();
     const password = document.getElementById('su-password').value;
 
-    if (!first || !last)              { showSuError('Please enter your first and last name.'); return; }
-    if (!email || !email.includes('@')){ showSuError('Please enter a valid email address.'); return; }
-    if (password.length < 8)          { showSuError('Password must be at least 8 characters.'); return; }
+    const _emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!first || !last)               { showSuError('Please enter your first and last name.'); return; }
+    if (!_emailRe.test(email))         { showSuError('Please enter a valid email address (e.g. you@example.com).'); return; }
+    if (password.length < 8)           { showSuError('Password must be at least 8 characters.'); return; }
 
     // Stash form data so handleRoleSelect can send it with the chosen role
     _suData = { name: first + ' ' + last, email, password };
