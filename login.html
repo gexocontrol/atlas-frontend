@@ -192,6 +192,52 @@
     }
     .role-card-desc { font-size: 0.7rem; color: var(--text-3); line-height: 1.4; }
 
+    /* ── Verification screen ── */
+    .verify-hint { font-size: 0.875rem; color: var(--text-2); margin-bottom: 28px; line-height: 1.55; }
+    .verify-hint strong { color: var(--text); font-weight: 600; }
+
+    .code-inputs {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-bottom: 24px;
+    }
+    .code-inputs input {
+        width: 44px;
+        height: 54px;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        background: var(--input-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--text);
+        -webkit-text-fill-color: var(--text);
+        outline: none;
+        caret-color: var(--text);
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .code-inputs input:focus {
+        border-color: #1A1814;
+        box-shadow: 0 0 0 3px rgba(26,24,20,0.10);
+    }
+    .code-inputs input.filled { background: rgba(26,24,20,0.05); }
+
+    .verify-footer {
+        text-align: center;
+        font-size: 0.82rem;
+        color: var(--text-3);
+        margin-top: -4px;
+    }
+    .verify-footer a {
+        color: var(--blue);
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .verify-footer a:hover { text-decoration: underline; }
+
     @keyframes slide-in {
         from { opacity: 0; transform: translateX(-16px); }
         to   { opacity: 1; transform: translateX(0); }
@@ -759,12 +805,54 @@
                 <div class="strength-text" id="strength-text"></div>
             </div>
 
-            <button class="btn-primary" onclick="handleSignup(event)">
+            <button class="btn-primary" id="su-submit-btn" onclick="handleSignup(event)">
                 Create Account <span class="btn-arrow">→</span>
             </button>
 
             <div class="signup-footer">
                 Already have an account? <a href="#" onclick="showScreen('login'); return false;">Sign in</a>
+            </div>
+
+        </div>
+
+        <!-- ══════════════════════════════
+             SCREEN 2.5: Email Verification
+        ══════════════════════════════ -->
+        <div id="screen-verify" class="screen-panel" style="display:none">
+
+            <a class="logo" href="#">
+                <img src="atlas-logo.png" alt="Atlas" class="brand-logo">
+                <span class="logo-text">ATLAS</span>
+            </a>
+
+            <h1 class="form-heading">Check your email</h1>
+            <p class="verify-hint">We sent a 6-digit code to <strong id="verify-email-display"></strong>. Enter it below — it expires in 10 minutes.</p>
+
+            <div class="error-banner" id="ve-error-banner">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" flex-shrink="0">
+                    <circle cx="12" cy="12" r="10" stroke="#B91C1C" stroke-width="2"/>
+                    <path d="M12 8v5M12 16.5v.5" stroke="#B91C1C" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span id="ve-error-msg"></span>
+            </div>
+
+            <div class="code-inputs" id="code-inputs">
+                <input type="text" inputmode="numeric" maxlength="1" id="code-0" autocomplete="off">
+                <input type="text" inputmode="numeric" maxlength="1" id="code-1" autocomplete="off">
+                <input type="text" inputmode="numeric" maxlength="1" id="code-2" autocomplete="off">
+                <input type="text" inputmode="numeric" maxlength="1" id="code-3" autocomplete="off">
+                <input type="text" inputmode="numeric" maxlength="1" id="code-4" autocomplete="off">
+                <input type="text" inputmode="numeric" maxlength="1" id="code-5" autocomplete="off">
+            </div>
+
+            <button class="btn-primary" id="verify-btn" onclick="handleVerify(event)">
+                Verify email <span class="btn-arrow">→</span>
+            </button>
+
+            <div class="verify-footer">
+                Didn't receive a code?&nbsp;<a id="resend-link" onclick="handleResendCode()">Resend code</a>
+                &nbsp;·&nbsp;
+                <a onclick="showScreen('signup')">Wrong email?</a>
             </div>
 
         </div>
@@ -1127,7 +1215,7 @@ document.addEventListener('keydown', e => {
    SCREEN NAVIGATION
 ═══════════════════════════════════════ */
 function showScreen(name) {
-    ['login', 'signup', 'role'].forEach(s => {
+    ['login', 'signup', 'verify', 'role'].forEach(s => {
         document.getElementById('screen-' + s).style.display = s === name ? 'flex' : 'none';
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1138,7 +1226,7 @@ function showScreen(name) {
 ═══════════════════════════════════════ */
 let _suData = {};   // holds form values between the signup and role screens
 
-function handleSignup(event) {
+async function handleSignup(event) {
     event.preventDefault();
     hideSuError();
 
@@ -1148,16 +1236,40 @@ function handleSignup(event) {
     const password = document.getElementById('su-password').value;
 
     const _emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    if (!first || !last)               { showSuError('Please enter your first and last name.'); return; }
-    if (!_emailRe.test(email))         { showSuError('Please enter a valid email address (e.g. you@example.com).'); return; }
-    if (password.length < 8)           { showSuError('Password must be at least 8 characters.'); return; }
+    if (!first || !last)       { showSuError('Please enter your first and last name.'); return; }
+    if (!_emailRe.test(email)) { showSuError('Please enter a valid email address (e.g. you@example.com).'); return; }
+    if (password.length < 8)   { showSuError('Password must be at least 8 characters.'); return; }
 
-    // Stash form data so handleRoleSelect can send it with the chosen role
     _suData = { name: first + ' ' + last, email, password };
 
-    document.getElementById('screen-signup').style.display = 'none';
-    document.getElementById('screen-role').style.display   = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const btn = document.getElementById('su-submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = 'Sending code&hellip;';
+
+    try {
+        const res  = await fetch('https://web-production-6f8843.up.railway.app/api/auth/signup', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ email, name: _suData.name, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            showSuError(data.error || 'Could not send verification code. Please try again.');
+            return;
+        }
+        // Show verification screen
+        document.getElementById('verify-email-display').textContent = email;
+        // Clear any leftover code digits
+        [0,1,2,3,4,5].forEach(i => { const el = document.getElementById('code-' + i); if (el) el.value = ''; });
+        hideVeError();
+        showScreen('verify');
+        setTimeout(() => { const el = document.getElementById('code-0'); if (el) el.focus(); }, 80);
+    } catch (err) {
+        showSuError('Network error. Please check your connection and try again.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Create Account <span class="btn-arrow">→</span>';
+    }
 }
 
 function showSuError(msg) {
@@ -1166,6 +1278,107 @@ function showSuError(msg) {
 }
 function hideSuError() {
     document.getElementById('su-error-banner').classList.remove('show');
+}
+function showVeError(msg) {
+    document.getElementById('ve-error-msg').textContent = msg;
+    document.getElementById('ve-error-banner').classList.add('show');
+}
+function hideVeError() {
+    document.getElementById('ve-error-banner').classList.remove('show');
+}
+
+/* ═══════════════════════════════════════
+   VERIFICATION CODE INPUTS
+═══════════════════════════════════════ */
+(function () {
+    const inputs = () => [0,1,2,3,4,5].map(i => document.getElementById('code-' + i));
+    document.addEventListener('DOMContentLoaded', () => {
+        inputs().forEach((inp, idx, arr) => {
+            if (!inp) return;
+            inp.addEventListener('input', () => {
+                inp.value = inp.value.replace(/\D/g, '').slice(-1);
+                inp.classList.toggle('filled', inp.value !== '');
+                if (inp.value && idx < arr.length - 1) arr[idx + 1].focus();
+            });
+            inp.addEventListener('keydown', e => {
+                if (e.key === 'Backspace' && !inp.value && idx > 0) arr[idx - 1].focus();
+            });
+            inp.addEventListener('paste', e => {
+                const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+                if (!text) return;
+                e.preventDefault();
+                [...text].slice(0, 6).forEach((ch, i) => { if (arr[idx + i]) arr[idx + i].value = ch; });
+                inputs().forEach(el => el && el.classList.toggle('filled', el.value !== ''));
+                const next = Math.min(idx + text.length, arr.length - 1);
+                arr[next].focus();
+            });
+        });
+    });
+})();
+
+/* ═══════════════════════════════════════
+   EMAIL VERIFICATION
+═══════════════════════════════════════ */
+async function handleVerify(event) {
+    hideVeError();
+    const digits = [0,1,2,3,4,5].map(i => (document.getElementById('code-' + i)?.value || '')).join('');
+    if (digits.length !== 6 || !/^\d{6}$/.test(digits)) {
+        showVeError('Please enter the complete 6-digit code.');
+        return;
+    }
+
+    const btn = document.getElementById('verify-btn');
+    btn.disabled = true;
+    btn.innerHTML = 'Verifying&hellip;';
+
+    try {
+        const res  = await fetch('https://web-production-6f8843.up.railway.app/api/auth/verify-email', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ email: _suData.email, code: digits }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            showVeError(data.error || 'Verification failed. Please try again.');
+            return;
+        }
+        // Account created — stash token so handleRoleSelect skips the backend call
+        _suData.token  = data.access_token;
+        _suData.userId = data.user?.id;
+        showScreen('role');
+    } catch (err) {
+        showVeError('Network error. Please check your connection.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Verify email <span class="btn-arrow">→</span>';
+    }
+}
+
+async function handleResendCode() {
+    const link = document.getElementById('resend-link');
+    const prev = link.textContent;
+    link.textContent = 'Sending…';
+    hideVeError();
+    try {
+        const res  = await fetch('https://web-production-6f8843.up.railway.app/api/auth/resend-code', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ email: _suData.email }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+            link.textContent = 'Sent!';
+            [0,1,2,3,4,5].forEach(i => { const el = document.getElementById('code-' + i); if (el) { el.value = ''; el.classList.remove('filled'); } });
+            setTimeout(() => { document.getElementById('code-0')?.focus(); }, 50);
+        } else {
+            showVeError(data.error || 'Could not resend code. Please try again.');
+            link.textContent = prev;
+        }
+    } catch {
+        showVeError('Network error.');
+        link.textContent = prev;
+    }
+    setTimeout(() => { link.textContent = 'Resend code'; }, 4000);
 }
 
 /* ═══════════════════════════════════════
@@ -1196,6 +1409,27 @@ async function handleRoleSelect() {
         teacher: 'teacher_dashboard.html',
         school:  'school_dashboard.html',
     };
+
+    // ── Email-verify flow: account already created at verify step ────
+    if (_suData.token) {
+        const user = {
+            email: _suData.email,
+            name:  _suData.name,
+            role:  _selectedRole,
+            token: _suData.token,
+        };
+        localStorage.setItem('atlas_user',  JSON.stringify(user));
+        localStorage.setItem('atlas_token', _suData.token);
+        try {
+            const accounts = JSON.parse(localStorage.getItem('atlas_accounts') || '[]');
+            const idx = accounts.findIndex(a => a.email === _suData.email);
+            if (idx >= 0) { accounts[idx] = { ...accounts[idx], ...user }; }
+            else          { accounts.push(user); }
+            localStorage.setItem('atlas_accounts', JSON.stringify(accounts));
+        } catch (_) {}
+        window.location.href = 'pricing.html?role=' + _selectedRole;
+        return;
+    }
 
     // ── Google sign-in: no password to register ───────────────────
     if (_suData.googleSignIn) {
