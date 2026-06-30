@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,29 +10,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-    /* ═══════════════════════════════════════
-       RESET & BASE
-    ═══════════════════════════════════════ */
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
     :root {
-        --bg:         #F4F1EA;
-        --blue:       #1A1814;
-        --blue-dark:  #1A1814;
-        --blue-dim:   rgba(26,24,20,0.08);
-        --border:     #E0DDD5;
-        --border-hi:  rgba(26,24,20,0.12);
-        --surface:    #FFFFFF;
-        --text:       #1A1814;
-        --text-2:     #6B6560;
-        --text-3:     #9E9A94;
-        --red:        #B91C1C;
-        --input-bg:   rgba(26,24,20,0.04);
+        --bg:        #F4F1EA;
+        --blue:      #1A1814;
+        --blue-dark: #1A1814;
+        --blue-dim:  rgba(26,24,20,0.08);
+        --border:    #E0DDD5;
+        --border-hi: rgba(26,24,20,0.12);
+        --text:      #1A1814;
+        --text-2:    #6B6560;
+        --text-3:    #9E9A94;
+        --red:       #B91C1C;
+        --input-bg:  rgba(26,24,20,0.04);
     }
 
-    html, body {
-        -webkit-font-smoothing: antialiased;
-    }
+    html, body { -webkit-font-smoothing: antialiased; }
 
     body {
         font-family: 'Inter', -apple-system, sans-serif;
@@ -47,7 +41,6 @@
         overflow-x: hidden;
     }
 
-    /* ── Outer background ── */
     body::before {
         content: '';
         position: fixed;
@@ -59,7 +52,6 @@
         z-index: 0;
     }
 
-    /* Dot grid */
     body::after {
         content: '';
         position: fixed;
@@ -70,9 +62,6 @@
         z-index: 0;
     }
 
-    /* ═══════════════════════════════════════
-       CARD
-    ═══════════════════════════════════════ */
     .split-card {
         position: relative;
         z-index: 1;
@@ -86,8 +75,6 @@
         border: 1px solid #E0DDD5;
         box-shadow: 0 8px 40px rgba(26,24,20,0.12), 0 1px 0 #E0DDD5;
         background: #FFFFFF;
-
-        /* Entrance animation */
         animation: card-in 0.7s cubic-bezier(0.34,1.2,0.64,1) both;
     }
 
@@ -96,9 +83,6 @@
         to   { opacity: 1; transform: translateY(0)    scale(1); }
     }
 
-    /* ═══════════════════════════════════════
-       LEFT — FORM PANEL
-    ═══════════════════════════════════════ */
     .form-panel {
         padding: 48px 44px;
         display: flex;
@@ -108,43 +92,18 @@
         position: relative;
     }
 
-    /* Stagger helper — applies to direct children of the login screen */
-    #screen-login > * { animation: slide-in 0.55s cubic-bezier(0.34,1.2,0.64,1) both; }
-    #screen-login > *:nth-child(1) { animation-delay: 0.12s; }
-    #screen-login > *:nth-child(2) { animation-delay: 0.20s; }
-    #screen-login > *:nth-child(3) { animation-delay: 0.27s; }
-    #screen-login > *:nth-child(4) { animation-delay: 0.32s; }
-    #screen-login > *:nth-child(5) { animation-delay: 0.37s; }
-    #screen-login > *:nth-child(6) { animation-delay: 0.42s; }
-    #screen-login > *:nth-child(7) { animation-delay: 0.46s; }
-    #screen-login > *:nth-child(8) { animation-delay: 0.50s; }
-
-    /* ── Screens (login / signup / role) ── */
     .screen-panel {
         display: flex;
         flex-direction: column;
         flex: 1;
     }
 
-    /* ── Name row (first + last side by side) ── */
-    .name-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-    .name-row .field { margin-bottom: 0; }
-
-    /* ── Password strength bar ── */
-    .strength-bar { display: flex; gap: 3px; margin-top: 6px; }
-    .strength-seg { flex: 1; height: 3px; border-radius: 99px; background: var(--border); transition: background 0.3s; }
-    .strength-text { font-size: 0.7rem; color: var(--text-3); margin-top: 4px; min-height: 14px; }
-
-    /* ── Step dots ── */
+    /* Step dots */
     .step-dots { display: flex; gap: 5px; margin-bottom: 20px; }
     .step-dot { width: 22px; height: 4px; border-radius: 99px; background: var(--border-hi); transition: background 0.2s; }
     .step-dot.active { background: var(--blue); }
 
-    /* ── Role grid ── */
+    /* Role grid */
     .role-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -162,15 +121,8 @@
         user-select: none;
         position: relative;
     }
-    .role-card:hover {
-        border-color: var(--border-hi);
-        background: rgba(26,24,20,0.05);
-        transform: translateY(-1px);
-    }
-    .role-card.selected {
-        border-color: var(--blue);
-        background: var(--blue-dim);
-    }
+    .role-card:hover { border-color: var(--border-hi); background: rgba(26,24,20,0.05); transform: translateY(-1px); }
+    .role-card.selected { border-color: var(--blue); background: var(--blue-dim); }
     .role-card-check {
         position: absolute;
         top: 7px; right: 7px;
@@ -183,105 +135,19 @@
     }
     .role-card.selected .role-card-check { display: flex; }
     .role-card-emoji { font-size: 1.4rem; margin-bottom: 6px; line-height: 1; }
-    .role-card-title {
-        font-size: 0.82rem;
-        font-weight: 700;
-        font-family: 'Inter', sans-serif;
-        color: var(--text);
-        margin-bottom: 3px;
-    }
+    .role-card-title { font-size: 0.82rem; font-weight: 700; font-family: 'Inter', sans-serif; color: var(--text); margin-bottom: 3px; }
     .role-card-desc { font-size: 0.7rem; color: var(--text-3); line-height: 1.4; }
 
-    /* ── Verification screen ── */
-    .verify-hint { font-size: 0.875rem; color: var(--text-2); margin-bottom: 28px; line-height: 1.55; }
-    .verify-hint strong { color: var(--text); font-weight: 600; }
-
-    .code-inputs {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        margin-bottom: 24px;
-    }
-    .code-inputs input {
-        width: 44px;
-        height: 54px;
-        text-align: center;
-        font-size: 1.5rem;
-        font-weight: 700;
-        font-family: 'Inter', sans-serif;
-        background: var(--input-bg);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        color: var(--text);
-        -webkit-text-fill-color: var(--text);
-        outline: none;
-        caret-color: var(--text);
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .code-inputs input:focus {
-        border-color: #1A1814;
-        box-shadow: 0 0 0 3px rgba(26,24,20,0.10);
-    }
-    .code-inputs input.filled { background: rgba(26,24,20,0.05); }
-
-    .verify-footer {
-        text-align: center;
-        font-size: 0.82rem;
-        color: var(--text-3);
-        margin-top: -4px;
-    }
-    .verify-footer a {
-        color: var(--blue);
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-    }
-    .verify-footer a:hover { text-decoration: underline; }
-
-    @keyframes slide-in {
-        from { opacity: 0; transform: translateX(-16px); }
-        to   { opacity: 1; transform: translateX(0); }
-    }
-
-    /* ── Logo ── */
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 36px;
-        text-decoration: none;
-    }
-
+    /* Logo */
+    .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 36px; text-decoration: none; }
     .brand-logo { height: 36px; width: auto; display: block; flex-shrink: 0; }
+    .logo-text { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 1.05rem; letter-spacing: -0.3px; color: #1A1814; }
 
-    .logo-text {
-        font-family: 'Inter', sans-serif;
-        font-weight: 800;
-        font-size: 1.05rem;
-        letter-spacing: -0.3px;
-        color: #1A1814;
-    }
+    /* Heading */
+    .form-heading { font-family: 'Inter', sans-serif; font-size: 1.65rem; font-weight: 800; letter-spacing: -0.6px; line-height: 1.15; margin-bottom: 8px; color: #1A1814; }
+    .form-sub { font-size: 0.875rem; color: var(--text-3); margin-bottom: 28px; font-weight: 400; line-height: 1.5; }
 
-    /* ── Heading ── */
-    .form-heading {
-        font-family: 'Inter', sans-serif;
-        font-size: 1.65rem;
-        font-weight: 800;
-        letter-spacing: -0.6px;
-        line-height: 1.15;
-        margin-bottom: 8px;
-        color: #1A1814;
-    }
-
-    .form-sub {
-        font-size: 0.875rem;
-        color: var(--text-3);
-        margin-bottom: 28px;
-        font-weight: 400;
-        line-height: 1.5;
-    }
-
-    /* ── Error banner ── */
+    /* Error banner */
     .error-banner {
         display: none;
         align-items: center;
@@ -297,127 +163,7 @@
     }
     .error-banner.show { display: flex; }
 
-    /* ── Fields ── */
-    .field {
-        display: flex;
-        flex-direction: column;
-        gap: 7px;
-        margin-bottom: 16px;
-    }
-
-    .field-label {
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.7px;
-        color: var(--text-3);
-    }
-
-    .field-label-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .input-wrap {
-        position: relative;
-    }
-
-    .field input {
-        width: 100%;
-        background: var(--input-bg);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 12px 16px;
-        color: var(--text);
-        font-size: 0.9rem;
-        font-family: 'Inter', sans-serif;
-        outline: none;
-        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-        -webkit-text-fill-color: var(--text);
-    }
-    .field input:focus {
-        border-color: #1A1814;
-        box-shadow: 0 0 0 3px rgba(26,24,20,0.10);
-        background: rgba(26,24,20,0.03);
-    }
-    .field input::placeholder { color: #B0ABA3; }
-
-    /* ── Eye toggle ── */
-    .field input.has-toggle { padding-right: 46px; }
-
-    .eye-btn {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: var(--text-3);
-        cursor: pointer;
-        padding: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 6px;
-        transition: color 0.2s;
-    }
-    .eye-btn:hover { color: var(--text-2); }
-
-    /* ── Forgot link ── */
-    .forgot-link {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: var(--blue);
-        text-decoration: none;
-        transition: opacity 0.2s;
-    }
-    .forgot-link:hover { opacity: 0.8; text-decoration: underline; }
-
-    /* ── Remember row ── */
-    .remember-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 22px;
-    }
-
-    .checkbox-label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        font-size: 0.82rem;
-        color: var(--text-2);
-        font-weight: 500;
-        user-select: none;
-    }
-
-    .checkbox-label input[type="checkbox"] {
-        appearance: none;
-        -webkit-appearance: none;
-        width: 16px;
-        height: 16px;
-        border-radius: 5px;
-        border: 1px solid rgba(26,24,20,0.15);
-        background: var(--input-bg);
-        cursor: pointer;
-        position: relative;
-        flex-shrink: 0;
-        transition: background 0.2s, border-color 0.2s;
-    }
-    .checkbox-label input[type="checkbox"]:checked {
-        background: var(--blue);
-        border-color: var(--blue);
-    }
-    .checkbox-label input[type="checkbox"]:checked::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4l2.5 2.5L9 1' stroke='white' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/60% no-repeat;
-    }
-
-    /* ── Primary button ── */
+    /* Primary button */
     .btn-primary {
         width: 100%;
         padding: 13px;
@@ -440,107 +186,19 @@
         position: relative;
         overflow: hidden;
     }
-    .btn-primary::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(26,24,20,0.08) 0%, transparent 60%);
-        pointer-events: none;
-    }
-    .btn-primary:hover {
-        opacity: 0.92;
-        box-shadow: 0 8px 32px rgba(26,24,20,0.08);
-        transform: translateY(-1px);
-    }
+    .btn-primary::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(26,24,20,0.08) 0%, transparent 60%); pointer-events: none; }
+    .btn-primary:hover { opacity: 0.92; box-shadow: 0 8px 32px rgba(26,24,20,0.08); transform: translateY(-1px); }
     .btn-primary:active { transform: translateY(0) scale(0.99); }
     .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
-
     .btn-arrow { font-size: 1rem; transition: transform 0.2s; }
     .btn-primary:hover .btn-arrow { transform: translateX(3px); }
 
-    /* ── Divider ── */
-    .divider {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-    .divider hr { flex: 1; border: none; border-top: 1px solid var(--border); }
-    .divider span {
-        font-size: 0.7rem;
-        font-weight: 600;
-        color: var(--text-3);
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        flex-shrink: 0;
-    }
+    /* Google button container */
+    .google-btn-wrap { display: flex; justify-content: center; margin-bottom: 28px; min-height: 44px; }
 
-    /* ── Google button ── */
-    .btn-google {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        padding: 12px;
-        background: rgba(26,24,20,0.04);
-        border: 1px solid var(--border);
-        border-radius: 11px;
-        color: var(--text-2);
-        font-size: 0.875rem;
-        font-weight: 600;
-        font-family: 'Inter', sans-serif;
-        cursor: pointer;
-        transition: background 0.2s, border-color 0.2s, color 0.2s;
-        margin-bottom: 28px;
-    }
-    .btn-google:hover {
-        background: rgba(26,24,20,0.06);
-        border-color: rgba(26,24,20,0.12);
-        color: var(--text);
-    }
-
-    /* ── Google rendered button container ── */
-    .google-btn-wrap {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 28px;
-        min-height: 44px;
-    }
-
-    /* ── Signup footer ── */
-    .signup-footer {
-        margin-top: auto;
-        font-size: 0.82rem;
-        color: var(--text-3);
-        text-align: center;
-    }
-    .signup-footer a {
-        color: var(--blue);
-        font-weight: 600;
-        text-decoration: none;
-        transition: opacity 0.2s;
-    }
-    .signup-footer a:hover { opacity: 0.8; text-decoration: underline; }
-
-    /* ═══════════════════════════════════════
-       RIGHT — VISUAL PANEL
-    ═══════════════════════════════════════ */
-    .visual-panel {
-        position: relative;
-        overflow: hidden;
-        background: #1A1814;
-    }
-
-    #aurora-canvas {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        display: block;
-    }
-
-    /* Bottom gradient fade */
+    /* Visual panel */
+    .visual-panel { position: relative; overflow: hidden; background: #1A1814; }
+    #aurora-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
     .visual-panel::after {
         content: '';
         position: absolute;
@@ -550,8 +208,6 @@
         z-index: 2;
         pointer-events: none;
     }
-
-    /* Top subtle fade */
     .visual-panel::before {
         content: '';
         position: absolute;
@@ -561,7 +217,6 @@
         z-index: 2;
         pointer-events: none;
     }
-
     .visual-overlay {
         position: absolute;
         inset: 0;
@@ -572,101 +227,21 @@
         padding: 36px;
         animation: fade-up 0.8s 0.5s cubic-bezier(0.34,1.2,0.64,1) both;
     }
+    @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .vis-headline { font-family: 'Inter', sans-serif; font-size: 1.45rem; font-weight: 800; letter-spacing: -0.5px; line-height: 1.25; margin-bottom: 20px; color: rgba(244,241,234,0.92); }
+    .vis-headline em { font-style: normal; background: linear-gradient(90deg, #F4F1EA, #C8C3B8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .vis-feats { display: flex; flex-direction: column; gap: 9px; }
+    .vis-feat-item { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; font-weight: 500; color: rgba(244,241,234,0.55); }
+    .feat-check { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: rgba(244,241,234,0.12); border: 1px solid rgba(244,241,234,0.22); }
 
-    @keyframes fade-up {
-        from { opacity: 0; transform: translateY(16px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .vis-gem-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        padding: 5px 13px;
-        border-radius: 99px;
-        background: rgba(244,241,234,0.10);
-        border: 1px solid rgba(244,241,234,0.20);
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: rgba(244,241,234,0.65);
-        letter-spacing: 0.6px;
-        text-transform: uppercase;
-        margin-bottom: 16px;
-        width: fit-content;
-    }
-    .gem-dot {
-        width: 6px; height: 6px;
-        border-radius: 50%;
-        background: rgba(244,241,234,0.70);
-        flex-shrink: 0;
-    }
-
-    .vis-headline {
-        font-family: 'Inter', sans-serif;
-        font-size: 1.45rem;
-        font-weight: 800;
-        letter-spacing: -0.5px;
-        line-height: 1.25;
-        margin-bottom: 20px;
-        color: rgba(244,241,234,0.92);
-    }
-    .vis-headline em {
-        font-style: normal;
-        background: linear-gradient(90deg, #F4F1EA, #C8C3B8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .vis-feats {
-        display: flex;
-        flex-direction: column;
-        gap: 9px;
-    }
-
-    .vis-feat-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: rgba(244,241,234,0.55);
-    }
-
-    .feat-check {
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        background: rgba(244,241,234,0.12);
-        border: 1px solid rgba(244,241,234,0.22);
-    }
-
-    /* ═══════════════════════════════════════
-       RESPONSIVE
-    ═══════════════════════════════════════ */
     @media (max-width: 700px) {
         body { padding: 20px 16px; align-items: flex-start; padding-top: 32px; }
-        .split-card {
-            grid-template-columns: 1fr;
-            max-width: 440px;
-            min-height: auto;
-            margin: 0 auto;
-        }
+        .split-card { grid-template-columns: 1fr; max-width: 440px; min-height: auto; margin: 0 auto; }
         .visual-panel { display: none; }
-        .form-panel {
-            border-right: none;
-            padding: 36px 28px 32px;
-        }
-        .split-card { backdrop-filter: none; -webkit-backdrop-filter: none; }
+        .form-panel { border-right: none; padding: 36px 28px 32px; }
     }
     @media (prefers-reduced-motion: reduce) {
-        .split-card,
-        .visual-overlay { animation: none !important; opacity: 1 !important; transform: none !important; }
-        #screen-login > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+        .split-card, .visual-overlay { animation: none !important; opacity: 1 !important; transform: none !important; }
     }
     </style>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -675,23 +250,18 @@
 
 <div class="split-card">
 
-    <!-- ═══════════════════════════════════════
-         LEFT: FORM PANEL
-    ═══════════════════════════════════════ -->
     <div class="form-panel">
 
-        <!-- ══════════════════════════════
-             SCREEN 1: Login
-        ══════════════════════════════ -->
-        <div id="screen-login" class="screen-panel" style="display:none">
+        <!-- SCREEN: Google Sign-In -->
+        <div id="screen-google" class="screen-panel" style="justify-content:center; align-items:center; text-align:center;">
 
-            <a class="logo" href="#">
+            <a class="logo" href="#" style="justify-content:center; margin-bottom:28px;">
                 <img src="atlas-logo.png" alt="Atlas" class="brand-logo">
                 <span class="logo-text">ATLAS</span>
             </a>
 
-            <h1 class="form-heading">Welcome back!</h1>
-            <p class="form-sub">Sign in to your Atlas account to continue your exam preparation journey.</p>
+            <h1 class="form-heading">Welcome to Atlas</h1>
+            <p class="form-sub">Sign in with Google to start your exam preparation journey.</p>
 
             <div class="error-banner" id="error-banner">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" flex-shrink="0">
@@ -701,165 +271,11 @@
                 <span id="error-msg"></span>
             </div>
 
-            <form id="login-form" onsubmit="handleLogin(event)" novalidate>
-                <div class="field">
-                    <label class="field-label" for="email">Email address</label>
-                    <input type="email" id="email" name="email"
-                           placeholder="you@example.com"
-                           autocomplete="email" required>
-                </div>
-                <div class="field">
-                    <div class="field-label-row">
-                        <label class="field-label" for="password">Password</label>
-                        <a href="#" class="forgot-link">Forgot password?</a>
-                    </div>
-                    <div class="input-wrap">
-                        <input type="password" id="password" name="password"
-                               placeholder="••••••••"
-                               class="has-toggle"
-                               autocomplete="current-password" required>
-                        <button type="button" class="eye-btn" id="eye-btn"
-                                onclick="togglePassword()" aria-label="Toggle password visibility">
-                            <svg id="eye-icon" width="17" height="17" viewBox="0 0 24 24" fill="none">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" stroke="currentColor" stroke-width="1.8"/>
-                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </form>
-
-            <div class="remember-row">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="remember-me">
-                    Remember me
-                </label>
-            </div>
-
-            <button class="btn-primary" id="login-btn" onclick="handleLogin(event)">
-                <span id="btn-label">Log in</span>
-                <span class="btn-arrow" id="btn-arrow">→</span>
-            </button>
-
-            <div class="divider"><hr><span>or</span><hr></div>
-
-            <div id="google-login-btn" class="google-btn-wrap"></div>
-
-            <div class="signup-footer">
-                Don't have an account? <a href="#" onclick="showScreen('signup'); return false;">Sign up for free</a>
-            </div>
+            <div id="google-signin-btn" class="google-btn-wrap"></div>
 
         </div>
 
-        <!-- ══════════════════════════════
-             SCREEN 2: Sign Up
-        ══════════════════════════════ -->
-        <div id="screen-signup" class="screen-panel">
-
-            <a class="logo" href="#">
-                <img src="atlas-logo.png" alt="Atlas" class="brand-logo">
-                <span class="logo-text">ATLAS</span>
-            </a>
-
-            <h1 class="form-heading">Create your account</h1>
-            <p class="form-sub">Join thousands of students preparing smarter with AI.</p>
-
-            <div class="error-banner" id="su-error-banner">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" flex-shrink="0">
-                    <circle cx="12" cy="12" r="10" stroke="#B91C1C" stroke-width="2"/>
-                    <path d="M12 8v5M12 16.5v.5" stroke="#B91C1C" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                <span id="su-error-msg"></span>
-            </div>
-
-            <div id="google-signup-btn" class="google-btn-wrap"></div>
-
-            <div class="divider"><hr><span>or</span><hr></div>
-
-            <div class="name-row">
-                <div class="field">
-                    <label class="field-label" for="su-first">First name</label>
-                    <input type="text" id="su-first" placeholder="Ahmed" autocomplete="given-name">
-                </div>
-                <div class="field">
-                    <label class="field-label" for="su-last">Last name</label>
-                    <input type="text" id="su-last" placeholder="Ali" autocomplete="family-name">
-                </div>
-            </div>
-
-            <div class="field" style="margin-top:12px">
-                <label class="field-label" for="su-email">Email address</label>
-                <input type="email" id="su-email" placeholder="you@example.com" autocomplete="email">
-            </div>
-
-            <div class="field">
-                <label class="field-label" for="su-password">Password</label>
-                <input type="password" id="su-password" placeholder="At least 8 characters"
-                       autocomplete="new-password" oninput="checkStrength(this.value)">
-                <div class="strength-bar">
-                    <div class="strength-seg" id="seg-1"></div>
-                    <div class="strength-seg" id="seg-2"></div>
-                    <div class="strength-seg" id="seg-3"></div>
-                    <div class="strength-seg" id="seg-4"></div>
-                </div>
-                <div class="strength-text" id="strength-text"></div>
-            </div>
-
-            <button class="btn-primary" id="su-submit-btn" onclick="handleSignup(event)">
-                Create Account <span class="btn-arrow">→</span>
-            </button>
-
-            <div class="signup-footer">
-                Already have an account? <a href="#" onclick="showScreen('login'); return false;">Sign in</a>
-            </div>
-
-        </div>
-
-        <!-- ══════════════════════════════
-             SCREEN 2.5: Email Verification
-        ══════════════════════════════ -->
-        <div id="screen-verify" class="screen-panel" style="display:none">
-
-            <a class="logo" href="#">
-                <img src="atlas-logo.png" alt="Atlas" class="brand-logo">
-                <span class="logo-text">ATLAS</span>
-            </a>
-
-            <h1 class="form-heading">Check your email</h1>
-            <p class="verify-hint">We sent a 6-digit code to <strong id="verify-email-display"></strong>. Enter it below — it expires in 10 minutes.</p>
-
-            <div class="error-banner" id="ve-error-banner">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" flex-shrink="0">
-                    <circle cx="12" cy="12" r="10" stroke="#B91C1C" stroke-width="2"/>
-                    <path d="M12 8v5M12 16.5v.5" stroke="#B91C1C" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                <span id="ve-error-msg"></span>
-            </div>
-
-            <div class="code-inputs" id="code-inputs">
-                <input type="text" inputmode="numeric" maxlength="1" id="code-0" autocomplete="off">
-                <input type="text" inputmode="numeric" maxlength="1" id="code-1" autocomplete="off">
-                <input type="text" inputmode="numeric" maxlength="1" id="code-2" autocomplete="off">
-                <input type="text" inputmode="numeric" maxlength="1" id="code-3" autocomplete="off">
-                <input type="text" inputmode="numeric" maxlength="1" id="code-4" autocomplete="off">
-                <input type="text" inputmode="numeric" maxlength="1" id="code-5" autocomplete="off">
-            </div>
-
-            <button class="btn-primary" id="verify-btn" onclick="handleVerify(event)">
-                Verify email <span class="btn-arrow">→</span>
-            </button>
-
-            <div class="verify-footer">
-                Didn't receive a code?&nbsp;<a id="resend-link" onclick="handleResendCode()">Resend code</a>
-                &nbsp;·&nbsp;
-                <a onclick="showScreen('signup')">Wrong email?</a>
-            </div>
-
-        </div>
-
-        <!-- ══════════════════════════════
-             SCREEN 3: Role Selection
-        ══════════════════════════════ -->
+        <!-- SCREEN: Role Selection (new users only) -->
         <div id="screen-role" class="screen-panel" style="display:none">
 
             <a class="logo" href="#">
@@ -915,9 +331,7 @@
 
     </div>
 
-    <!-- ═══════════════════════════════════════
-         RIGHT: AURORA VISUAL PANEL
-    ═══════════════════════════════════════ -->
+    <!-- RIGHT: AURORA VISUAL PANEL -->
     <div class="visual-panel">
         <canvas id="aurora-canvas"></canvas>
 
@@ -925,29 +339,22 @@
             <div class="vis-headline">
                 The <em>smarter way</em> to prepare<br>for your exams.
             </div>
-
             <div class="vis-feats">
                 <div class="vis-feat-item">
                     <div class="feat-check">
-                        <svg width="9" height="9" viewBox="0 0 10 8" fill="none">
-                            <path d="M1 4l2.5 2.5L9 1" stroke="rgba(244,241,234,0.75)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                        <svg width="9" height="9" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="rgba(244,241,234,0.75)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </div>
                     AI exam improver
                 </div>
                 <div class="vis-feat-item">
                     <div class="feat-check">
-                        <svg width="9" height="9" viewBox="0 0 10 8" fill="none">
-                            <path d="M1 4l2.5 2.5L9 1" stroke="rgba(244,241,234,0.75)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                        <svg width="9" height="9" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="rgba(244,241,234,0.75)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </div>
                     Instant document summaries
                 </div>
                 <div class="vis-feat-item">
                     <div class="feat-check">
-                        <svg width="9" height="9" viewBox="0 0 10 8" fill="none">
-                            <path d="M1 4l2.5 2.5L9 1" stroke="rgba(244,241,234,0.75)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                        <svg width="9" height="9" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="rgba(244,241,234,0.75)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </div>
                     Your-style practice exams generated
                 </div>
@@ -964,9 +371,8 @@
 (function initAurora() {
     const canvas = document.getElementById('aurora-canvas');
     const ctx    = canvas.getContext('2d');
-    let W, H, raf;
+    let W, H;
 
-    /* Stars — subtle cream dots on dark panel */
     const STARS = Array.from({ length: 50 }, () => ({
         x: Math.random(), y: Math.random(),
         r: Math.random() * 0.8 + 0.15,
@@ -975,13 +381,12 @@
         phase: Math.random() * Math.PI * 2,
     }));
 
-    /* Aurora bands — cream waves on charcoal */
     const BANDS = [
-        { y:0.28, th:0.18, amp:0.07, freq:1.4, spd:0.18, ph:0.0,  c:'#F4F1EA', op:0.10 },
-        { y:0.42, th:0.13, amp:0.06, freq:1.9, spd:0.32, ph:1.8,  c:'#EAE7DE', op:0.08 },
-        { y:0.52, th:0.16, amp:0.08, freq:1.2, spd:0.14, ph:3.2,  c:'#F4F1EA', op:0.09 },
-        { y:0.34, th:0.08, amp:0.04, freq:2.8, spd:0.44, ph:0.9,  c:'#D4CFC4', op:0.06 },
-        { y:0.62, th:0.11, amp:0.05, freq:2.1, spd:0.24, ph:2.4,  c:'#E0DDD5', op:0.07 },
+        { y:0.28, th:0.18, amp:0.07, freq:1.4, spd:0.18, ph:0.0, c:'#F4F1EA', op:0.10 },
+        { y:0.42, th:0.13, amp:0.06, freq:1.9, spd:0.32, ph:1.8, c:'#EAE7DE', op:0.08 },
+        { y:0.52, th:0.16, amp:0.08, freq:1.2, spd:0.14, ph:3.2, c:'#F4F1EA', op:0.09 },
+        { y:0.34, th:0.08, amp:0.04, freq:2.8, spd:0.44, ph:0.9, c:'#D4CFC4', op:0.06 },
+        { y:0.62, th:0.11, amp:0.05, freq:2.1, spd:0.24, ph:2.4, c:'#E0DDD5', op:0.07 },
     ];
 
     function resize() {
@@ -990,37 +395,24 @@
         H = canvas.height = panel.offsetHeight;
     }
 
-    function hexRgba(hex, a) {
-        const r = parseInt(hex.slice(1,3),16);
-        const g = parseInt(hex.slice(3,5),16);
-        const b = parseInt(hex.slice(5,7),16);
-        return `rgba(${r},${g},${b},${a})`;
-    }
-
     function drawBand(band, T) {
-        const N  = 180;
+        const N = 180;
         const tx = [], ty = [], bx = [], by_arr = [];
-
         for (let i = 0; i <= N; i++) {
-            const t  = i / N;
-            const w1 = Math.sin(t * Math.PI * 2 * band.freq + T * band.spd + band.ph);
-            const w2 = Math.sin(t * Math.PI * 2 * band.freq * 0.48 + T * band.spd * 1.4 + band.ph + 1.2);
+            const t    = i / N;
+            const w1   = Math.sin(t * Math.PI * 2 * band.freq + T * band.spd + band.ph);
+            const w2   = Math.sin(t * Math.PI * 2 * band.freq * 0.48 + T * band.spd * 1.4 + band.ph + 1.2);
             const wave = w1 * 0.72 + w2 * 0.28;
-
-            /* vary thickness along length for organic look */
             const thkMod = 0.65 + 0.35 * Math.sin(t * Math.PI * 2.5 + T * 0.25);
             const half   = (band.th / 2) * H * thkMod;
             const cy     = (band.y + wave * band.amp) * H;
-
-            tx.push(t * W);  ty.push(cy - half);
-            bx.push(t * W);  by_arr.push(cy + half);
+            tx.push(t * W); ty.push(cy - half);
+            bx.push(t * W); by_arr.push(cy + half);
         }
-
         ctx.beginPath();
         tx.forEach((x, i) => i === 0 ? ctx.moveTo(x, ty[i]) : ctx.lineTo(x, ty[i]));
         for (let i = N; i >= 0; i--) ctx.lineTo(bx[i], by_arr[i]);
         ctx.closePath();
-
         const midT = ty[Math.floor(N/2)];
         const midB = by_arr[Math.floor(N/2)];
         const grad = ctx.createLinearGradient(0, midT, 0, midB);
@@ -1033,14 +425,10 @@
     }
 
     function draw(ts) {
-        raf = requestAnimationFrame(draw);
+        requestAnimationFrame(draw);
         const T = ts * 0.001;
-
-        /* Background */
         ctx.fillStyle = '#1A1814';
         ctx.fillRect(0, 0, W, H);
-
-        /* Stars */
         STARS.forEach(s => {
             const twinkle = 0.55 + 0.45 * Math.sin(T * s.speed * 10 + s.phase);
             ctx.globalAlpha = s.base * twinkle;
@@ -1050,141 +438,66 @@
             ctx.fill();
         });
         ctx.globalAlpha = 1;
-
-        /* Aurora bands — cream waves, no screen blend */
         BANDS.forEach(b => drawBand(b, T));
     }
 
     if (window.matchMedia('(max-width: 767px)').matches) return;
     resize();
-    window.addEventListener('resize', () => { resize(); });
+    window.addEventListener('resize', resize);
     requestAnimationFrame(draw);
 })();
 
 /* ═══════════════════════════════════════
-   PASSWORD TOGGLE
+   GOOGLE SIGN-IN
 ═══════════════════════════════════════ */
-function togglePassword() {
-    const inp  = document.getElementById('password');
-    const icon = document.getElementById('eye-icon');
-    const show = inp.type === 'password';
-    inp.type = show ? 'text' : 'password';
-    icon.innerHTML = show
-        ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>`
-        : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" stroke="currentColor" stroke-width="1.8"/>
-           <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>`;
-}
-
-/* ═══════════════════════════════════════
-   LOGIN
-═══════════════════════════════════════ */
-const BACKEND_URL = 'https://web-production-6f8843.up.railway.app';
-
-async function handleLogin(e) {
-    e.preventDefault();
-    hideError();
-
-    const email    = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-
-    if (!email)               { showError('Please enter your email address.'); return; }
-    if (!email.includes('@')) { showError('Please enter a valid email address.'); return; }
-    if (!password)            { showError('Please enter your password.'); return; }
-
-    const btn   = document.getElementById('login-btn');
-    const label = document.getElementById('btn-label');
-    btn.disabled      = true;
-    label.textContent = 'Signing in…';
-
-    const destinations = {
-        student: 'student_dashboard.html',
-        teacher: 'teacher_dashboard.html',
-        school:  'school_dashboard.html',
-    };
-
-    try {
-        const res  = await fetch(`${BACKEND_URL}/api/auth/login`, {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ email, password }),
-        });
-        const data = await res.json();
-
-        if (res.ok && data.access_token) {
-            const user = { email, name: data.name || email, role: data.role || 'student', token: data.access_token };
-            localStorage.setItem('atlas_user',  JSON.stringify(user));
-            localStorage.setItem('atlas_token', data.access_token);
-            window.location.href = destinations[data.role] || 'student_dashboard.html';
-            return;
-        }
-
-        showError(data.error || 'Incorrect email or password.');
-    } catch (_) {
-        // Backend unreachable — check for a locally registered account
-        try {
-            const accounts = JSON.parse(localStorage.getItem('atlas_accounts') || '[]');
-            const match    = accounts.find(a => a.email === email);
-            if (match) {
-                localStorage.setItem('atlas_user', JSON.stringify(match));
-                window.location.href = destinations[match.role] || 'student_dashboard.html';
-                return;
-            }
-        } catch (_2) {}
-        showError('Cannot reach the server. Please check your connection.');
-    } finally {
-        btn.disabled      = false;
-        label.textContent = 'Log in';
-    }
-}
-
-/* ═══════════════════════════════════════
-   GOOGLE SIGN-IN (GIS)
-═══════════════════════════════════════ */
+const BACKEND_URL      = 'https://web-production-6f8843.up.railway.app';
 const GOOGLE_CLIENT_ID = '248120359997-d2uamu7l8bum10qq7om31ksltiqu7cnj.apps.googleusercontent.com';
 
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     if (!window.google?.accounts?.id) return;
     google.accounts.id.initialize({
         client_id:   GOOGLE_CLIENT_ID,
         callback:    handleGoogleCredential,
         auto_select: false,
     });
-    const loginEl  = document.getElementById('google-login-btn');
-    const signupEl = document.getElementById('google-signup-btn');
-    if (loginEl)  google.accounts.id.renderButton(loginEl,  { theme: 'outline', size: 'large', text: 'signin_with', width: 360 });
-    if (signupEl) google.accounts.id.renderButton(signupEl, { theme: 'outline', size: 'large', text: 'signup_with',   width: 360 });
+    const el = document.getElementById('google-signin-btn');
+    if (el) google.accounts.id.renderButton(el, { theme: 'outline', size: 'large', text: 'signin_with', width: 320 });
 });
 
-function handleGoogleCredential(response) {
-    const payload  = decodeGoogleJwt(response.credential);
-    const signupEl = document.getElementById('screen-signup');
-    const mode     = signupEl && signupEl.style.display !== 'none' ? 'signup' : 'login';
-    const errFn    = mode === 'login' ? showError : showSuError;
+async function handleGoogleCredential(response) {
+    const payload = decodeGoogleJwt(response.credential);
     if (!payload?.email) {
-        errFn('Couldn\'t read your Google account info. Please try again.');
+        showError("Couldn't read your Google account. Please try again.");
         return;
     }
+
     const email = payload.email;
     const name  = payload.name
         || [payload.given_name, payload.family_name].filter(Boolean).join(' ')
         || email.split('@')[0];
 
-    if (mode === 'login') {
-        const accounts = JSON.parse(localStorage.getItem('atlas_accounts') || '[]');
-        const existing = accounts.find(a => a.email === email);
-        const role     = existing?.role || 'student';
-        const user     = { email, name, role, googleSignIn: true };
-        localStorage.setItem('atlas_user', JSON.stringify(user));
-        const dest = {
-            student: 'student_dashboard.html',
-            teacher: 'teacher_dashboard.html',
-            school:  'school_dashboard.html',
-        };
-        window.location.href = dest[role] || 'student_dashboard.html';
-    } else {
-        _suData = { name, email, googleSignIn: true };
-        showScreen('role');
+    try {
+        const res  = await fetch(`${BACKEND_URL}/api/auth/google-login`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ email, name }),
+        });
+        const data = await res.json();
+
+        if (res.ok && data.returning) {
+            const user = { email, name: data.name || name, role: data.role, token: data.token, googleSignIn: true };
+            localStorage.setItem('atlas_user',  JSON.stringify(user));
+            localStorage.setItem('atlas_token', data.token || '');
+            const dest = { student: 'student_dashboard.html', teacher: 'teacher_dashboard.html', school: 'school_dashboard.html' };
+            window.location.href = dest[data.role] || 'student_dashboard.html';
+        } else if (res.ok && data.new_user) {
+            _suData = { email, name, googleSignIn: true };
+            showScreen('role');
+        } else {
+            showError(data.error || 'Sign-in failed. Please try again.');
+        }
+    } catch (_) {
+        showError('Network error. Please check your connection.');
     }
 }
 
@@ -1196,194 +509,27 @@ function decodeGoogleJwt(token) {
 }
 
 function showError(msg) {
-    const b = document.getElementById('error-banner');
     document.getElementById('error-msg').textContent = msg;
-    b.classList.add('show');
+    document.getElementById('error-banner').classList.add('show');
 }
 function hideError() {
     document.getElementById('error-banner').classList.remove('show');
 }
 
-/* Enter key submits form */
-document.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && document.activeElement.tagName !== 'BUTTON') {
-        handleLogin(e);
-    }
-});
-
 /* ═══════════════════════════════════════
    SCREEN NAVIGATION
 ═══════════════════════════════════════ */
 function showScreen(name) {
-    ['login', 'signup', 'verify', 'role'].forEach(s => {
+    ['google', 'role'].forEach(s => {
         document.getElementById('screen-' + s).style.display = s === name ? 'flex' : 'none';
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ═══════════════════════════════════════
-   SIGNUP
-═══════════════════════════════════════ */
-let _suData = {};   // holds form values between the signup and role screens
-
-async function handleSignup(event) {
-    event.preventDefault();
-    hideSuError();
-
-    const first    = document.getElementById('su-first').value.trim();
-    const last     = document.getElementById('su-last').value.trim();
-    const email    = document.getElementById('su-email').value.trim();
-    const password = document.getElementById('su-password').value;
-
-    const _emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    if (!first || !last)       { showSuError('Please enter your first and last name.'); return; }
-    if (!_emailRe.test(email)) { showSuError('Please enter a valid email address (e.g. you@example.com).'); return; }
-    if (password.length < 8)   { showSuError('Password must be at least 8 characters.'); return; }
-
-    _suData = { name: first + ' ' + last, email, password };
-
-    const btn = document.getElementById('su-submit-btn');
-    btn.disabled = true;
-    btn.innerHTML = 'Sending code&hellip;';
-
-    try {
-        const res  = await fetch('https://web-production-6f8843.up.railway.app/api/auth/signup', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ email, name: _suData.name, password }),
-        });
-        const data = await res.json();
-        if (!res.ok) {
-            showSuError(data.error || 'Could not send verification code. Please try again.');
-            return;
-        }
-        // Show verification screen
-        document.getElementById('verify-email-display').textContent = email;
-        // Clear any leftover code digits
-        [0,1,2,3,4,5].forEach(i => { const el = document.getElementById('code-' + i); if (el) el.value = ''; });
-        hideVeError();
-        showScreen('verify');
-        setTimeout(() => { const el = document.getElementById('code-0'); if (el) el.focus(); }, 80);
-    } catch (err) {
-        showSuError('Network error. Please check your connection and try again.');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = 'Create Account <span class="btn-arrow">→</span>';
-    }
-}
-
-function showSuError(msg) {
-    document.getElementById('su-error-msg').textContent = msg;
-    document.getElementById('su-error-banner').classList.add('show');
-}
-function hideSuError() {
-    document.getElementById('su-error-banner').classList.remove('show');
-}
-function showVeError(msg) {
-    document.getElementById('ve-error-msg').textContent = msg;
-    document.getElementById('ve-error-banner').classList.add('show');
-}
-function hideVeError() {
-    document.getElementById('ve-error-banner').classList.remove('show');
-}
-
-/* ═══════════════════════════════════════
-   VERIFICATION CODE INPUTS
-═══════════════════════════════════════ */
-(function () {
-    const inputs = () => [0,1,2,3,4,5].map(i => document.getElementById('code-' + i));
-    document.addEventListener('DOMContentLoaded', () => {
-        inputs().forEach((inp, idx, arr) => {
-            if (!inp) return;
-            inp.addEventListener('input', () => {
-                inp.value = inp.value.replace(/\D/g, '').slice(-1);
-                inp.classList.toggle('filled', inp.value !== '');
-                if (inp.value && idx < arr.length - 1) arr[idx + 1].focus();
-            });
-            inp.addEventListener('keydown', e => {
-                if (e.key === 'Backspace' && !inp.value && idx > 0) arr[idx - 1].focus();
-            });
-            inp.addEventListener('paste', e => {
-                const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
-                if (!text) return;
-                e.preventDefault();
-                [...text].slice(0, 6).forEach((ch, i) => { if (arr[idx + i]) arr[idx + i].value = ch; });
-                inputs().forEach(el => el && el.classList.toggle('filled', el.value !== ''));
-                const next = Math.min(idx + text.length, arr.length - 1);
-                arr[next].focus();
-            });
-        });
-    });
-})();
-
-/* ═══════════════════════════════════════
-   EMAIL VERIFICATION
-═══════════════════════════════════════ */
-async function handleVerify(event) {
-    hideVeError();
-    const digits = [0,1,2,3,4,5].map(i => (document.getElementById('code-' + i)?.value || '')).join('');
-    if (digits.length !== 6 || !/^\d{6}$/.test(digits)) {
-        showVeError('Please enter the complete 6-digit code.');
-        return;
-    }
-
-    const btn = document.getElementById('verify-btn');
-    btn.disabled = true;
-    btn.innerHTML = 'Verifying&hellip;';
-
-    try {
-        const res  = await fetch('https://web-production-6f8843.up.railway.app/api/auth/verify-email', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ email: _suData.email, code: digits }),
-        });
-        const data = await res.json();
-        if (!res.ok) {
-            showVeError(data.error || 'Verification failed. Please try again.');
-            return;
-        }
-        // Account created — stash token so handleRoleSelect skips the backend call
-        _suData.token  = data.access_token;
-        _suData.userId = data.user?.id;
-        showScreen('role');
-    } catch (err) {
-        showVeError('Network error. Please check your connection.');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = 'Verify email <span class="btn-arrow">→</span>';
-    }
-}
-
-async function handleResendCode() {
-    const link = document.getElementById('resend-link');
-    const prev = link.textContent;
-    link.textContent = 'Sending…';
-    hideVeError();
-    try {
-        const res  = await fetch('https://web-production-6f8843.up.railway.app/api/auth/resend-code', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ email: _suData.email }),
-        });
-        const data = await res.json();
-        if (res.ok) {
-            link.textContent = 'Sent!';
-            [0,1,2,3,4,5].forEach(i => { const el = document.getElementById('code-' + i); if (el) { el.value = ''; el.classList.remove('filled'); } });
-            setTimeout(() => { document.getElementById('code-0')?.focus(); }, 50);
-        } else {
-            showVeError(data.error || 'Could not resend code. Please try again.');
-            link.textContent = prev;
-        }
-    } catch {
-        showVeError('Network error.');
-        link.textContent = prev;
-    }
-    setTimeout(() => { link.textContent = 'Resend code'; }, 4000);
-}
-
-/* ═══════════════════════════════════════
    ROLE SELECTION
 ═══════════════════════════════════════ */
+let _suData       = {};
 let _selectedRole = null;
 
 function selectRole(card, role) {
@@ -1402,126 +548,24 @@ async function handleRoleSelect() {
     const btn = document.getElementById('continue-btn');
     btn.disabled      = true;
     btn.style.opacity = '0.6';
-    btn.innerHTML     = 'Creating account&hellip;';
+    btn.innerHTML     = 'Setting up your account…';
 
-    const destinations = {
-        student: 'student_dashboard.html',
-        teacher: 'teacher_dashboard.html',
-        school:  'school_dashboard.html',
-    };
-
-    // ── Email-verify flow: account already created at verify step ────
-    if (_suData.token) {
-        const user = {
-            email: _suData.email,
-            name:  _suData.name,
-            role:  _selectedRole,
-            token: _suData.token,
-        };
-        localStorage.setItem('atlas_user',  JSON.stringify(user));
-        localStorage.setItem('atlas_token', _suData.token);
-        try {
-            const accounts = JSON.parse(localStorage.getItem('atlas_accounts') || '[]');
-            const idx = accounts.findIndex(a => a.email === _suData.email);
-            if (idx >= 0) { accounts[idx] = { ...accounts[idx], ...user }; }
-            else          { accounts.push(user); }
-            localStorage.setItem('atlas_accounts', JSON.stringify(accounts));
-        } catch (_) {}
-        window.location.href = 'pricing.html?role=' + _selectedRole;
-        return;
-    }
-
-    // ── Google sign-in: no password to register ───────────────────
-    if (_suData.googleSignIn) {
-        const user = { email: _suData.email, name: _suData.name, role: _selectedRole, googleSignIn: true };
-        localStorage.setItem('atlas_user', JSON.stringify(user));
-        try {
-            const accounts = JSON.parse(localStorage.getItem('atlas_accounts') || '[]');
-            const idx = accounts.findIndex(a => a.email === _suData.email);
-            if (idx >= 0) accounts[idx] = { ...accounts[idx], ...user };
-            else          accounts.push(user);
-            localStorage.setItem('atlas_accounts', JSON.stringify(accounts));
-        } catch (_) {}
-        window.location.href = 'pricing.html?role=' + _selectedRole;
-        return;
-    }
-
-    // ── POST to backend (saves to Supabase) ──────────────────────
     try {
-        const res  = await fetch('https://web-production-6f8843.up.railway.app/api/auth/signup', {
+        const res  = await fetch(`${BACKEND_URL}/api/auth/google-signup`, {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({
-                email:    _suData.email,
-                name:     _suData.name,
-                password: _suData.password,
-                role:     _selectedRole,
-            }),
+            body:    JSON.stringify({ email: _suData.email, name: _suData.name, role: _selectedRole }),
         });
-
         const data = await res.json();
-
-        if (!res.ok) {
-            // Surface backend error back on the signup screen
-            document.getElementById('screen-role').style.display   = 'none';
-            document.getElementById('screen-signup').style.display = 'flex';
-            showSuError(data.error || 'Signup failed. Please try again.');
-            btn.disabled      = false;
-            btn.style.opacity = '1';
-            btn.innerHTML     = 'Continue to Atlas <span class="btn-arrow">→</span>';
-            return;
-        }
-
-        // ── Success: persist to localStorage ─────────────────────
-        const user = {
-            email: _suData.email,
-            name:  _suData.name,
-            role:  _selectedRole,
-            token: data.access_token,
-        };
+        const user = { email: _suData.email, name: _suData.name, role: _selectedRole, token: data.token || '', googleSignIn: true };
         localStorage.setItem('atlas_user',  JSON.stringify(user));
-        localStorage.setItem('atlas_token', data.access_token || '');
-
-        try {
-            const accounts = JSON.parse(localStorage.getItem('atlas_accounts') || '[]');
-            const idx = accounts.findIndex(a => a.email === _suData.email);
-            if (idx >= 0) { accounts[idx] = { ...accounts[idx], ...user }; }
-            else          { accounts.push(user); }
-            localStorage.setItem('atlas_accounts', JSON.stringify(accounts));
-        } catch (_) {}
-
-    } catch (networkErr) {
-        // Backend unreachable — save locally so the app still works offline
-        const user = { email: _suData.email, name: _suData.name, role: _selectedRole };
+        localStorage.setItem('atlas_token', data.token || '');
+    } catch (_) {
+        const user = { email: _suData.email, name: _suData.name, role: _selectedRole, googleSignIn: true };
         localStorage.setItem('atlas_user', JSON.stringify(user));
-        try {
-            const accounts = JSON.parse(localStorage.getItem('atlas_accounts') || '[]');
-            if (!accounts.find(a => a.email === _suData.email)) accounts.push(user);
-            localStorage.setItem('atlas_accounts', JSON.stringify(accounts));
-        } catch (_) {}
     }
 
     window.location.href = 'pricing.html?role=' + _selectedRole;
-}
-
-/* ═══════════════════════════════════════
-   PASSWORD STRENGTH (signup)
-═══════════════════════════════════════ */
-function checkStrength(val) {
-    let score = 0;
-    if (val.length >= 8)             score++;
-    if (/[A-Z]/.test(val))           score++;
-    if (/[0-9]/.test(val))           score++;
-    if (/[^A-Za-z0-9]/.test(val))   score++;
-    const colors = ['', '#B91C1C', '#1A1814', '#1A1814', '#1A1814'];
-    const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
-    [1, 2, 3, 4].forEach(i => {
-        document.getElementById('seg-' + i).style.background =
-            i <= score ? colors[score] : 'rgba(26,24,20,0.08)';
-    });
-    const t = document.getElementById('strength-text');
-    t.textContent  = val.length > 0 ? labels[score] : '';
-    t.style.color  = colors[score] || '';
 }
 </script>
 </body>
