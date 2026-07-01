@@ -116,6 +116,25 @@
         .field input:focus, .field select:focus { border-color: var(--accent); }
         .field select option { background: var(--surface-2); }
 
+        /* ── CTRL LABEL ── */
+        .ctrl-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 8px; }
+
+        /* ── SEGMENTED CONTROL ── */
+        .seg-wrap { display: flex; flex-direction: column; margin-bottom: 20px; }
+        .seg-control { display: flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 3px; gap: 3px; }
+        .seg-btn { flex: 1; padding: 9px 8px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--muted); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: background 0.18s, color 0.18s, border-color 0.18s; white-space: nowrap; text-align: center; }
+        .seg-btn:hover { color: var(--text); background: rgba(26,24,20,0.04); }
+        .seg-btn.active { background: var(--surface); color: var(--accent); border-color: rgba(26,24,20,0.07); box-shadow: 0 1px 4px rgba(0,0,0,0.35); }
+
+        /* ── PAGES SLIDER ── */
+        .slider-wrap { display: flex; align-items: center; gap: 16px; }
+        .pages-slider { flex: 1; -webkit-appearance: none; appearance: none; height: 5px; border-radius: 99px; background: var(--surface-2); border: 1px solid var(--border); outline: none; cursor: pointer; }
+        .pages-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; box-shadow: 0 0 10px rgba(26,24,20,0.07); transition: transform 0.15s; }
+        .pages-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        .pages-slider::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; }
+        .pages-display { font-size: 0.9rem; font-weight: 800; color: var(--accent); min-width: 72px; text-align: center; background: rgba(26,24,20,0.07); border: 1px solid rgba(26,24,20,0.07); border-radius: 8px; padding: 7px 12px; font-family: 'Inter', monospace; }
+        .slider-range-labels { display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.7rem; color: var(--muted); }
+
         .drop-zone {
             border: 2px dashed var(--border);
             border-radius: var(--radius);
@@ -355,6 +374,8 @@
         @media (max-width: 600px) {
             .hero h1 { font-size: 1.7rem; }
             .fields-row { grid-template-columns: 1fr; }
+            .seg-control { flex-wrap: wrap; }
+            .seg-btn { flex: 0 0 calc(50% - 2px); }
             .result-meta-bar { flex-direction: column; align-items: flex-start; }
             nav { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(244,241,234,0.98); }
         }
@@ -384,32 +405,59 @@
 
     <!-- Upload Card -->
     <div class="upload-card">
-        <div class="fields-row">
-            <div class="field">
-                <label>Subject</label>
-                <select id="subject">
-                    <option value="Mathematics">Mathematics</option>
-                    <option value="Physics">Physics</option>
-                    <option value="Chemistry">Chemistry</option>
-                    <option value="Biology">Biology</option>
-                    <option value="English Language">English Language</option>
-                    <option value="English Literature">English Literature</option>
-                    <option value="History">History</option>
-                    <option value="Geography">Geography</option>
-                    <option value="Economics">Economics</option>
-                    <option value="Computer Science">Computer Science</option>
-                    <option value="Arabic">Arabic</option>
-                    <option value="Other">Other</option>
-                </select>
+        <!-- Subject -->
+        <div class="field" style="margin-bottom:20px;">
+            <label>Subject</label>
+            <select id="subject">
+                <option value="Mathematics">Mathematics</option>
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Biology">Biology</option>
+                <option value="English Language">English Language</option>
+                <option value="English Literature">English Literature</option>
+                <option value="History">History</option>
+                <option value="Geography">Geography</option>
+                <option value="Economics">Economics</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Arabic">Arabic</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <!-- Difficulty -->
+        <div class="seg-wrap">
+            <div class="ctrl-label">Difficulty Level</div>
+            <div class="seg-control" id="difficulty-ctrl">
+                <button class="seg-btn active" data-value="Easy"   onclick="selectSeg('difficulty-ctrl', this)">Easy</button>
+                <button class="seg-btn"         data-value="Medium" onclick="selectSeg('difficulty-ctrl', this)">Medium</button>
+                <button class="seg-btn"         data-value="Hard"   onclick="selectSeg('difficulty-ctrl', this)">Hard</button>
+                <button class="seg-btn"         data-value="Expert" onclick="selectSeg('difficulty-ctrl', this)">Expert</button>
             </div>
-            <div class="field">
-                <label>Number of Questions</label>
-                <select id="num-questions">
-                    <option value="5">5 questions</option>
-                    <option value="10" selected>10 questions</option>
-                    <option value="15">15 questions</option>
-                    <option value="20">20 questions</option>
-                </select>
+        </div>
+
+        <!-- Exam Type -->
+        <div class="seg-wrap">
+            <div class="ctrl-label">Exam Type</div>
+            <div class="seg-control" id="examtype-ctrl">
+                <button class="seg-btn active" data-value="Multiple Choice"      onclick="selectSeg('examtype-ctrl', this)">Multiple Choice</button>
+                <button class="seg-btn"         data-value="Explain &amp; Essay" onclick="selectSeg('examtype-ctrl', this)">Explain &amp; Essay</button>
+                <button class="seg-btn"         data-value="Practical to Theory" onclick="selectSeg('examtype-ctrl', this)">Practical to Theory</button>
+                <button class="seg-btn"         data-value="Mixed"               onclick="selectSeg('examtype-ctrl', this)">Mixed</button>
+            </div>
+        </div>
+
+        <!-- Number of Pages -->
+        <div style="margin-bottom:20px;">
+            <div class="ctrl-label">Number of Pages</div>
+            <div class="slider-wrap">
+                <input type="range" class="pages-slider" id="num-pages"
+                       min="2" max="13" value="5"
+                       oninput="updatePagesDisplay(this.value)">
+                <div class="pages-display" id="pages-display">5 pages</div>
+            </div>
+            <div class="slider-range-labels">
+                <span>2 pages (short)</span>
+                <span>13 pages (full exam)</span>
             </div>
         </div>
 
@@ -453,6 +501,8 @@
             <h2 id="result-heading">Generated Exam</h2>
             <div class="meta-tags">
                 <span class="meta-tag" id="result-subject-tag"></span>
+                <span class="meta-tag" id="result-difficulty-tag"></span>
+                <span class="meta-tag" id="result-pages-tag"></span>
                 <span class="meta-tag" id="result-count-tag"></span>
             </div>
         </div>
@@ -525,6 +575,18 @@
         document.getElementById('error-banner').style.display = 'none';
     }
 
+    function selectSeg(ctrlId, btn) {
+        document.querySelectorAll('#' + ctrlId + ' .seg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+    function getSegValue(ctrlId) {
+        const active = document.querySelector('#' + ctrlId + ' .seg-btn.active');
+        return active ? active.dataset.value : '';
+    }
+    function updatePagesDisplay(val) {
+        document.getElementById('pages-display').textContent = val + ' page' + (val == 1 ? '' : 's');
+    }
+
     async function runGenerate() {
         hideError();
         if (!selectedFile) { showError('Please select a PDF file first.'); return; }
@@ -534,21 +596,25 @@
         document.getElementById('results-section').style.display = 'none';
 
         try {
-            const subject = document.getElementById('subject').value;
-            const numQuestions = document.getElementById('num-questions').value;
+            const subject    = document.getElementById('subject').value;
+            const difficulty = getSegValue('difficulty-ctrl');
+            const examType   = getSegValue('examtype-ctrl');
+            const numPages   = document.getElementById('num-pages').value;
 
             setProgress(10, 'Uploading PDF...', 'Sending your document to Atlas backend...');
 
             const formData = new FormData();
-            formData.append('file', selectedFile);
-            formData.append('subject', subject);
-            formData.append('num_questions', numQuestions);
+            formData.append('file',       selectedFile);
+            formData.append('subject',    subject);
+            formData.append('difficulty', difficulty);
+            formData.append('exam_type',  examType);
+            formData.append('num_pages',  numPages);
             const _u = JSON.parse(localStorage.getItem('atlas_user') || '{}');
             formData.append('user_email', _u.email || '');
             formData.append('plan',       _u.plan  || 'free');
             formData.append('role',       _u.role  || 'student');
 
-            setProgress(35, 'Building exam...', 'AI is generating questions — this takes 15–30 seconds...');
+            setProgress(35, 'Building exam...', `Generating a ${difficulty.toLowerCase()} ${examType.toLowerCase()} exam — this takes 15–30 seconds...`);
 
             const response = await fetch(`${BACKEND_URL}/api/create-exam/pdf`, {
                 method: 'POST',
@@ -566,7 +632,7 @@
 
             setTimeout(() => {
                 document.getElementById('progress-section').style.display = 'none';
-                renderResults(data.exam);
+                renderResults(data.exam, difficulty, numPages);
             }, 400);
 
         } catch (err) {
@@ -576,11 +642,13 @@
         }
     }
 
-    function renderResults(exam) {
+    function renderResults(exam, difficulty, numPages) {
         const questions = exam.questions || [];
         document.getElementById('result-heading').textContent = (exam.subject || 'Practice') + ' Exam';
-        document.getElementById('result-subject-tag').textContent = '📚 ' + (exam.subject || 'General');
-        document.getElementById('result-count-tag').textContent = questions.length + ' Questions';
+        document.getElementById('result-subject-tag').textContent    = '📚 ' + (exam.subject || 'General');
+        document.getElementById('result-difficulty-tag').textContent = '⚡ ' + (exam.difficulty || difficulty || '');
+        document.getElementById('result-pages-tag').textContent      = '📄 ' + (numPages || '') + ' pages';
+        document.getElementById('result-count-tag').textContent      = questions.length + ' Questions';
 
         const list = document.getElementById('questions-list');
         list.innerHTML = '';
