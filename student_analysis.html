@@ -96,11 +96,11 @@
             margin-bottom: 24px;
         }
         .fields-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            display: flex;
+            justify-content: center;
             margin-bottom: 20px;
         }
+        .fields-row .field { width: 50%; }
         .field { display: flex; flex-direction: column; gap: 6px; }
         .field label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--muted); }
         .field input, .field select {
@@ -424,7 +424,7 @@
 
         /* ── RESPONSIVE ── */
         @media (max-width: 600px) {
-            .fields-row { grid-template-columns: 1fr; }
+            .fields-row .field { width: 100%; }
             .score-card { flex-direction: column; text-align: center; }
             .grade-badge { margin-left: 0; }
             .hero h1 { font-size: 1.7rem; }
