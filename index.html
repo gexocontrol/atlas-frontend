@@ -137,6 +137,13 @@
     .role-card-emoji { font-size: 1.4rem; margin-bottom: 6px; line-height: 1; }
     .role-card-title { font-size: 0.82rem; font-weight: 700; font-family: 'Inter', sans-serif; color: var(--text); margin-bottom: 3px; }
     .role-card-desc { font-size: 0.7rem; color: var(--text-3); line-height: 1.4; }
+    /* School "Coming Soon" panel */
+    .school-cs { display: none; text-align: center; padding: 36px 24px 28px; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 14px; margin-bottom: 20px; }
+    .school-cs-icon  { font-size: 2rem; margin-bottom: 12px; line-height: 1; }
+    .school-cs-title { font-size: 1rem; font-weight: 700; font-family: 'Inter', sans-serif; color: var(--text); margin-bottom: 10px; }
+    .school-cs-body  { font-size: 0.78rem; color: var(--text-2); line-height: 1.65; margin-bottom: 22px; }
+    .school-cs-back  { background: none; border: 1.5px solid var(--border); border-radius: 9px; padding: 9px 20px; font-size: 0.78rem; font-weight: 600; color: var(--text-2); cursor: pointer; font-family: 'Inter', sans-serif; letter-spacing: 0.2px; transition: border-color 0.2s, color 0.2s; }
+    .school-cs-back:hover { border-color: var(--blue); color: var(--text); }
 
     /* Logo */
     .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 36px; text-decoration: none; }
@@ -320,6 +327,14 @@
                     <div class="role-card-desc">Manage classes &amp; departments</div>
                 </div>
 
+            </div>
+
+            <!-- School: Coming Soon -->
+            <div class="school-cs" id="school-cs">
+                <div class="school-cs-icon">✨</div>
+                <div class="school-cs-title">School accounts are coming soon!</div>
+                <div class="school-cs-body">We're putting the finishing touches on powerful tools for schools.<br>For now, please choose <strong>Student</strong> or <strong>Teacher</strong>.</div>
+                <button class="school-cs-back" onclick="hideSchoolCS()">← Back to roles</button>
             </div>
 
             <button class="btn-primary" id="continue-btn" onclick="handleRoleSelect()" disabled
@@ -533,6 +548,7 @@ let _suData       = {};
 let _selectedRole = null;
 
 function selectRole(card, role) {
+    if (role === 'school') { showSchoolCS(); return; }
     document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     _selectedRole = role;
@@ -540,6 +556,22 @@ function selectRole(card, role) {
     btn.disabled      = false;
     btn.style.opacity = '1';
     btn.style.cursor  = 'pointer';
+}
+function showSchoolCS() {
+    document.getElementById('school-cs').style.display    = 'block';
+    document.querySelector('.role-grid').style.display    = 'none';
+    document.getElementById('continue-btn').style.display = 'none';
+}
+function hideSchoolCS() {
+    document.getElementById('school-cs').style.display    = 'none';
+    document.querySelector('.role-grid').style.display    = 'grid';
+    const btn = document.getElementById('continue-btn');
+    btn.style.display = '';
+    btn.disabled      = true;
+    btn.style.opacity = '0.45';
+    btn.style.cursor  = 'not-allowed';
+    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+    _selectedRole = null;
 }
 
 async function handleRoleSelect() {
