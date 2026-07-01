@@ -503,8 +503,14 @@ async function handleGoogleCredential(response) {
             const user = { email, name: data.name || name, role: data.role, token: data.token, googleSignIn: true };
             localStorage.setItem('atlas_user',  JSON.stringify(user));
             localStorage.setItem('atlas_token', data.token || '');
-            const dest = { student: 'student_dashboard.html', teacher: 'teacher_dashboard.html', school: 'school_dashboard.html' };
-            window.location.href = dest[data.role] || 'student_dashboard.html';
+            if (data.role === 'school') {
+                _suData = { email, name: data.name || name, googleSignIn: true };
+                showScreen('role');
+                showSchoolCS();
+            } else {
+                const dest = { student: 'student_dashboard.html', teacher: 'teacher_dashboard.html' };
+                window.location.href = dest[data.role] || 'student_dashboard.html';
+            }
         } else if (res.ok && data.new_user) {
             _suData = { email, name, googleSignIn: true };
             showScreen('role');
