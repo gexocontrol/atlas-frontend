@@ -591,10 +591,6 @@
     <div class="upload-card">
         <div class="fields-row">
             <div class="field">
-                <label>Your Name</label>
-                <input type="text" id="student-name" placeholder="e.g. Ahmed Ali">
-            </div>
-            <div class="field">
                 <label>Subject</label>
                 <select id="subject">
                     <option value="Mathematics">Mathematics</option>
@@ -701,7 +697,6 @@
             </div>
             <div class="score-info">
                 <div class="subject-badge" id="result-subject">Subject</div>
-                <h2 id="result-name">Student</h2>
                 <p class="summary" id="result-summary"></p>
             </div>
             <div class="grade-badge" id="grade-badge">—</div>
@@ -900,10 +895,8 @@
         document.getElementById('results-section').style.display = 'none';
 
         try {
-            const studentName = document.getElementById('student-name').value.trim() || 'Student';
-            const subject     = document.getElementById('subject').value;
-            const formData    = new FormData();
-            formData.append('student_name', studentName);
+            const subject  = document.getElementById('subject').value;
+            const formData = new FormData();
             formData.append('subject', subject);
             const _u = JSON.parse(localStorage.getItem('atlas_user') || '{}');
             formData.append('user_email', _u.email || '');
@@ -968,7 +961,6 @@
         gb.style.color = color;
 
         document.getElementById('result-subject').textContent = a.subject ?? '';
-        document.getElementById('result-name').textContent = a.student_name ?? '';
         document.getElementById('result-summary').textContent = a.summary ?? '';
 
         // Strengths & weaknesses
@@ -1104,7 +1096,7 @@
 
         write('ATLAS — Exam Analysis Report', 18, true, [37, 99, 235]);
         y += 2;
-        write(`Student: ${a.student_name}   |   Subject: ${a.subject}   |   Score: ${a.overall_score}/100 (${a.grade})`, 11, false, [80, 80, 80]);
+        write(`Subject: ${a.subject}   |   Score: ${a.overall_score}/100 (${a.grade})`, 11, false, [80, 80, 80]);
         y += 4;
         write('Summary', 13, true);
         write(a.summary, 11);
@@ -1137,7 +1129,7 @@
         write('A Message for You', 13, true, [37, 99, 235]);
         write(a.encouragement, 11, false, [60, 80, 120]);
 
-        doc.save(`Atlas-Exam-Report-${a.student_name.replace(/\s+/g, '-')}.pdf`);
+        doc.save(`Atlas-Exam-Report-${(a.subject || 'Exam').replace(/\s+/g, '-')}.pdf`);
     }
 </script>
 <footer style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:7px 0;font-family:'Inter',-apple-system,sans-serif;font-size:0.68rem;letter-spacing:0.3px;color:#B0ABA3;background:rgba(244,241,234,0.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-top:1px solid rgba(224,221,213,0.5);z-index:9999;pointer-events:none;">Powered by <strong style="font-weight:600;color:#9E9A94;">GEXO AI</strong> &nbsp;·&nbsp; For support: <a href="mailto:contact.gexoai@gmail.com" style="color:#9E9A94;font-weight:600;text-decoration:none;pointer-events:auto;">contact.gexoai@gmail.com</a></footer>
