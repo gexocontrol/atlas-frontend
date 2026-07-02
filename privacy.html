@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas // Privacy Policy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:      #F4F1EA;
+            --surface: #FFFFFF;
+            --border:  #E0DDD5;
+            --text:    #1A1814;
+            --muted:   #6B6560;
+            --accent:  #1A1814;
+            --radius:  14px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(244,241,234,0.92);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: -0.5px;
+            color: var(--text);
+            text-decoration: none;
+        }
+        .brand-logo { height: 34px; width: auto; display: block; }
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .nav-back:hover { color: var(--text); border-color: var(--accent); }
+
+        /* ── MAIN ── */
+        main {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 56px 24px 40px;
+        }
+
+        /* ── HERO ── */
+        .page-hero {
+            margin-bottom: 40px;
+        }
+        .page-hero h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+        .last-updated {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+        .lang-toggle {
+            display: inline-flex;
+            gap: 4px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 3px;
+            margin-bottom: 8px;
+        }
+        .lang-btn {
+            padding: 6px 18px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            background: transparent;
+            color: var(--muted);
+            font-family: 'Inter', sans-serif;
+            transition: all 0.18s;
+        }
+        .lang-btn.active {
+            background: var(--accent);
+            color: #F4F1EA;
+            border-color: var(--accent);
+        }
+        .lang-note {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* ── POLICY CONTENT ── */
+        .policy-body {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .policy-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px 32px;
+        }
+        .policy-section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .policy-section-title .sec-icon {
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+        .policy-section p,
+        .policy-section li {
+            font-size: 0.875rem;
+            color: var(--muted);
+            line-height: 1.75;
+        }
+        .policy-section p + p { margin-top: 10px; }
+        .policy-section ul,
+        .policy-section ol {
+            padding-left: 20px;
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .policy-section strong { color: var(--text); font-weight: 600; }
+        .policy-section a {
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(26,24,20,0.2);
+        }
+        .policy-section a:hover { border-bottom-color: var(--accent); }
+
+        /* ── RTL (Arabic) ── */
+        #content-ar {
+            direction: rtl;
+            text-align: right;
+        }
+        #content-ar .policy-section ul,
+        #content-ar .policy-section ol {
+            padding-left: 0;
+            padding-right: 20px;
+        }
+        #content-ar .policy-section-title { flex-direction: row-reverse; }
+
+        /* ── FOOTER ── */
+        footer {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            text-align: center;
+            padding: 7px 0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 0.68rem;
+            letter-spacing: 0.3px;
+            color: #B0ABA3;
+            background: rgba(244,241,234,0.88);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-top: 1px solid rgba(224,221,213,0.5);
+            z-index: 9999;
+        }
+        footer strong { font-weight: 600; color: #9E9A94; }
+        footer a { color: #9E9A94; font-weight: 600; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 600px) {
+            nav { padding: 12px 20px; }
+            main { padding: 36px 16px 40px; }
+            .policy-section { padding: 22px 20px; }
+            .page-hero h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a class="nav-logo" href="login.html">
+        <img src="atlas-logo.png" alt="Atlas" class="brand-logo">
+        ATLAS
+    </a>
+    <button class="nav-back" onclick="history.back()">← Back</button>
+</nav>
+
+<main>
+
+    <div class="page-hero">
+        <h1>Privacy Policy</h1>
+        <p class="last-updated">Last updated: July 2, 2026</p>
+
+        <div class="lang-toggle">
+            <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+            <button class="lang-btn"        id="btn-ar" onclick="setLang('ar')">AR</button>
+        </div>
+        <p class="lang-note">More languages coming soon.</p>
+    </div>
+
+    <!-- ══════════ ENGLISH ══════════ -->
+    <div id="content-en">
+        <div class="policy-body">
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">📋</span> 1. Introduction</div>
+                <p>Atlas is an AI-powered platform designed to help students and teachers analyze exams, generate practice exams, and summarize study materials. This Privacy Policy explains what information we collect when you use Atlas, how we use it, and how we protect it.</p>
+                <p>By using Atlas, you agree to the practices described in this policy. If you have any questions, please contact us using the details in Section 11.</p>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">📂</span> 2. Information We Collect</div>
+                <ul>
+                    <li><strong>Account Information:</strong> When you sign in with Google, we receive your name and email address. We store these to create and manage your Atlas account.</li>
+                    <li><strong>Uploaded Content:</strong> When you use Atlas features, you upload exam files, documents, and images. These files are transmitted to our AI provider to perform the requested analysis or generation.</li>
+                    <li><strong>Usage Data:</strong> We record the number of operations you perform (such as exam analyses, summaries, and exam generations) in order to enforce your plan's fair-usage limits. We do not collect detailed behavioural tracking data or sell your data to advertisers.</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">⚙️</span> 3. How We Use Your Information</div>
+                <ul>
+                    <li>To provide the Atlas service — analyzing uploaded exams, generating practice exams, and summarizing documents.</li>
+                    <li>To send your uploaded files to Google's Gemini AI API for AI-powered processing. Files are transmitted securely and used only for the operation you requested.</li>
+                    <li>To manage your account, verify your plan tier, and enforce usage limits.</li>
+                    <li>To respond to your support or privacy requests.</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">🔑</span> 4. Google Sign-In</div>
+                <p>Atlas uses Google OAuth for secure, password-free authentication. When you sign in with Google, we receive your name and email address as provided by Google. We do not receive or store your Google password.</p>
+                <p>We comply with <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">Google's API Services User Data Policy</a>. For more information on how Google handles your data, please review <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's Privacy Policy</a>.</p>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">🔗</span> 5. Third-Party Services</div>
+                <p>To provide our service, we rely on the following third-party providers:</p>
+                <ul>
+                    <li><strong>Google Gemini AI:</strong> Documents, exam files, and images you upload are sent to Google Gemini AI for AI-powered analysis and content generation. Google processes this data under its own privacy and data policies.</li>
+                    <li><strong>Infrastructure Providers:</strong> We use cloud hosting and infrastructure services to operate the Atlas platform securely and reliably.</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">🗂️</span> 6. Data Retention</div>
+                <ul>
+                    <li><strong>Uploaded Files:</strong> Files you upload are processed to generate your requested results. We do not permanently store your uploaded exam files or documents on our servers beyond what is needed to complete the operation.</li>
+                    <li><strong>Account Data:</strong> We retain your name and email address for as long as your Atlas account is active. If you request account deletion, we will remove your personal data within a reasonable timeframe.</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">🔒</span> 7. Data Security</div>
+                <p>We take reasonable technical and organisational measures to protect your information from unauthorised access, loss, or disclosure. All data is transmitted over encrypted HTTPS connections.</p>
+                <p>However, no internet transmission or storage system is completely secure. We encourage you to protect your Google account with a strong password and two-factor authentication.</p>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">🎓</span> 8. Children's Privacy</div>
+                <p>Atlas is designed for students of all ages, including those who may be minors. If you are under the age of majority in your country, please use Atlas with the consent of a parent, guardian, or your school.</p>
+                <p>We do not knowingly collect personal data from children without appropriate parental or institutional consent. If you believe a minor has provided personal information to Atlas without consent, please contact us so we can take appropriate action.</p>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">✅</span> 9. Your Rights</div>
+                <p>You have the right to access, correct, or request deletion of your personal data held by Atlas. To exercise any of these rights, please contact us at the email address in Section 11. We will respond to your request within a reasonable time.</p>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">📝</span> 10. Changes to This Policy</div>
+                <p>We may update this Privacy Policy from time to time. When we do, we will update the "Last Updated" date at the top of this page. We encourage you to review this policy periodically.</p>
+                <p>Continued use of Atlas after a revised policy is posted constitutes your acceptance of the updated terms.</p>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">✉️</span> 11. Contact</div>
+                <p>If you have any questions about this Privacy Policy or how we handle your personal data, please contact us at:</p>
+                <p style="margin-top:12px;"><a href="mailto:contact.gexoai@gmail.com">contact.gexoai@gmail.com</a></p>
+            </div>
+
+        </div>
+    </div><!-- /content-en -->
+
+    <!-- ══════════ ARABIC ══════════ -->
+    <div id="content-ar" style="display:none">
+        <div class="policy-body">
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">📋</span> ١. مقدمة</div>
+                <p>Atlas هي منصة مدعومة بالذكاء الاصطناعي، مصممة لمساعدة الطلاب والمعلمين على تحليل الاختبارات، وإنشاء اختبارات تدريبية، وتلخيص المواد الدراسية. توضح سياسة الخصوصية هذه المعلومات التي نجمعها عند استخدامك لـ Atlas، وكيفية استخدامها وحمايتها.</p>
+                <p>باستخدامك لـ Atlas، فإنك توافق على الممارسات الموضحة في هذه السياسة. إذا كانت لديك أي أسئلة، يُرجى التواصل معنا عبر التفاصيل الواردة في القسم الحادي عشر.</p>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">📂</span> ٢. المعلومات التي نجمعها</div>
+                <ul>
+                    <li><strong>معلومات الحساب:</strong> عند تسجيل الدخول عبر Google، نتلقى اسمك وعنوان بريدك الإلكتروني. نحتفظ بهذه المعلومات لإنشاء حسابك على Atlas وإدارته.</li>
+                    <li><strong>المحتوى المرفوع:</strong> عند استخدام ميزات Atlas، تقوم برفع ملفات الاختبارات والوثائق والصور. يتم إرسال هذه الملفات إلى مزود الذكاء الاصطناعي لدينا لإجراء التحليل أو الإنشاء المطلوب.</li>
+                    <li><strong>بيانات الاستخدام:</strong> نسجّل عدد العمليات التي تجريها (مثل تحليلات الاختبارات والملخصات وإنشاء الاختبارات) لتطبيق حدود الاستخدام العادل في خطتك. لا نجمع بيانات تتبع سلوكية مفصلة، ولا نبيع بياناتك للمعلنين.</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">⚙️</span> ٣. كيف نستخدم معلوماتك</div>
+                <ul>
+                    <li>لتقديم خدمة Atlas — تحليل الاختبارات المرفوعة، وإنشاء اختبارات تدريبية، وتلخيص الوثائق.</li>
+                    <li>لإرسال ملفاتك المرفوعة إلى واجهة برمجة تطبيقات Google Gemini AI للمعالجة المدعومة بالذكاء الاصطناعي. تُنقل الملفات بشكل آمن وتُستخدم فقط للعملية التي طلبتها.</li>
+                    <li>لإدارة حسابك، والتحقق من مستوى خطتك، وتطبيق حدود الاستخدام.</li>
+                    <li>للرد على طلبات الدعم أو الخصوصية الخاصة بك.</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">🔑</span> ٤. تسجيل الدخول عبر Google</div>
+                <p>يستخدم Atlas نظام Google OAuth للمصادقة الآمنة بدون كلمة مرور. عند تسجيل الدخول عبر Google، نتلقى اسمك وعنوان بريدك الإلكتروني كما قدمتهما لـ Google. لا نتلقى كلمة مرور Google الخاصة بك أو نخزّنها.</p>
+                <p>نلتزم بسياسة بيانات مستخدمي خدمات Google API. للمزيد من المعلومات حول كيفية تعامل Google مع بياناتك، يُرجى مراجعة <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">سياسة خصوصية Google</a>.</p>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">🔗</span> ٥. خدمات الطرف الثالث</div>
+                <p>لتقديم خدمتنا، نعتمد على مزودي الخدمة التاليين من الطرف الثالث:</p>
+                <ul>
+                    <li><strong>Google Gemini AI:</strong> يتم إرسال المستندات وملفات الاختبارات والصور التي ترفعها إلى Google Gemini AI لإجراء التحليل وإنشاء المحتوى المدعوم بالذكاء الاصطناعي. تعالج Google هذه البيانات وفقًا لسياسات الخصوصية والبيانات الخاصة بها.</li>
+                    <li><strong>مزودو البنية التحتية:</strong> نستخدم خدمات الاستضافة السحابية والبنية التحتية لتشغيل منصة Atlas بشكل آمن وموثوق.</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">🗂️</span> ٦. الاحتفاظ بالبيانات</div>
+                <ul>
+                    <li><strong>الملفات المرفوعة:</strong> تُعالج الملفات التي ترفعها لإنتاج النتائج المطلوبة. لا نحتفظ بملفات اختباراتك أو وثائقك المرفوعة بشكل دائم على خوادمنا بعد اكتمال العملية.</li>
+                    <li><strong>بيانات الحساب:</strong> نحتفظ باسمك وعنوان بريدك الإلكتروني طالما أن حسابك على Atlas نشطًا. إذا طلبت حذف حسابك، فسنزيل بياناتك الشخصية في غضون فترة زمنية معقولة.</li>
+                </ul>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">🔒</span> ٧. أمن البيانات</div>
+                <p>نتخذ تدابير تقنية وتنظيمية معقولة لحماية معلوماتك من الوصول غير المصرح به أو الفقدان أو الإفصاح. تُنقل جميع البيانات عبر اتصالات HTTPS مشفرة.</p>
+                <p>ومع ذلك، لا توجد وسيلة نقل عبر الإنترنت أو نظام تخزين آمن بشكل كامل. نشجعك على حماية حساب Google الخاص بك بكلمة مرور قوية والمصادقة الثنائية.</p>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">🎓</span> ٨. خصوصية الأطفال</div>
+                <p>صُمِّم Atlas للطلاب من جميع الأعمار، بمن فيهم القاصرون. إذا كنت دون سن الرشد في بلدك، يُرجى استخدام Atlas بموافقة أحد الوالدين أو الوصي القانوني أو مدرستك.</p>
+                <p>لا نجمع عن قصد بيانات شخصية من الأطفال دون الحصول على موافقة مناسبة. إذا كنت تعتقد أن قاصرًا قد قدّم معلومات شخصية لـ Atlas دون موافقة، يُرجى التواصل معنا لاتخاذ الإجراءات المناسبة.</p>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">✅</span> ٩. حقوقك</div>
+                <p>يحق لك الوصول إلى بياناتك الشخصية المحتفظ بها في Atlas أو تصحيحها أو طلب حذفها. لممارسة أيٍّ من هذه الحقوق، يُرجى التواصل معنا على عنوان البريد الإلكتروني الوارد في القسم الحادي عشر. سنرد على طلبك في غضون وقت معقول.</p>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">📝</span> ١٠. التغييرات على هذه السياسة</div>
+                <p>قد نُحدّث سياسة الخصوصية هذه من وقت لآخر. عند القيام بذلك، سنُحدّث تاريخ "آخر تحديث" في أعلى هذه الصفحة. نشجعك على مراجعة هذه السياسة بشكل دوري.</p>
+                <p>يُعدّ استمرار استخدامك لـ Atlas بعد نشر السياسة المُعدَّلة قبولًا منك للشروط المُحدَّثة.</p>
+            </div>
+
+            <div class="policy-section">
+                <div class="policy-section-title"><span class="sec-icon">✉️</span> ١١. التواصل معنا</div>
+                <p>إذا كانت لديك أي أسئلة حول سياسة الخصوصية هذه أو كيفية تعاملنا مع بياناتك الشخصية، يُرجى التواصل معنا على:</p>
+                <p style="margin-top:12px;"><a href="mailto:contact.gexoai@gmail.com">contact.gexoai@gmail.com</a></p>
+            </div>
+
+        </div>
+    </div><!-- /content-ar -->
+
+</main>
+
+<footer>Powered by <strong>GEXO AI</strong> &nbsp;·&nbsp; For support: <a href="mailto:contact.gexoai@gmail.com">contact.gexoai@gmail.com</a> &nbsp;·&nbsp; <a href="privacy.html">Privacy Policy</a></footer>
+
+<script>
+    function setLang(lang) {
+        document.getElementById('content-en').style.display = lang === 'en' ? '' : 'none';
+        document.getElementById('content-ar').style.display = lang === 'ar' ? '' : 'none';
+        document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+        document.getElementById('btn-ar').classList.toggle('active', lang === 'ar');
+        document.documentElement.lang = lang;
+    }
+</script>
+</body>
+</html>
