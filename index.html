@@ -201,7 +201,35 @@
     .btn-primary:hover .btn-arrow { transform: translateX(3px); }
 
     /* Google button container */
-    .google-btn-wrap { display: flex; justify-content: center; margin-bottom: 28px; min-height: 44px; }
+    .google-btn-wrap { display: flex; justify-content: center; margin-bottom: 10px; min-height: 44px; }
+
+    /* Privacy consent + gate */
+    .google-btn-gate { position:relative; display:flex; flex-direction:column; align-items:center; }
+    .google-btn-gate-overlay { position:absolute; inset:0; z-index:5; cursor:not-allowed; border-radius:6px; }
+    .google-btn-gate.consented .google-btn-gate-overlay { display:none; }
+    .google-btn-gate:not(.consented) .google-btn-wrap { opacity:0.35; filter:grayscale(30%); }
+    .consent-row { display:flex; align-items:flex-start; gap:9px; margin:10px auto 4px; max-width:320px; }
+    .consent-cb { width:15px; height:15px; min-width:15px; accent-color:#1A1814; cursor:pointer; margin-top:3px; flex-shrink:0; }
+    .consent-label { font-size:0.74rem; color:#6B6560; line-height:1.55; text-align:left; }
+    .consent-link { color:#1A1814; font-weight:600; text-decoration:underline; cursor:pointer; background:none; border:none; padding:0; font-size:inherit; font-family:'Inter',sans-serif; }
+    .consent-hint { font-size:0.7rem; color:#B91C1C; text-align:center; min-height:18px; margin:2px 0 10px; }
+
+    /* Privacy policy modal */
+    #privacy-modal { display:none; position:fixed; inset:0; z-index:10000; background:rgba(26,24,20,0.52); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:16px; }
+    .pm-box { background:#FFFFFF; border-radius:18px; max-width:520px; width:100%; max-height:82vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 24px 64px rgba(26,24,20,0.2); font-family:'Inter',-apple-system,sans-serif; }
+    .pm-head { display:flex; align-items:center; justify-content:space-between; padding:20px 24px 16px; border-bottom:1px solid #E0DDD5; flex-shrink:0; }
+    .pm-title { font-size:1rem; font-weight:700; color:#1A1814; margin:0; }
+    .pm-close { background:none; border:none; cursor:pointer; padding:4px 7px; color:#6B6560; font-size:1.1rem; line-height:1; border-radius:6px; transition:background 0.15s; }
+    .pm-close:hover { background:#F4F1EA; }
+    .pm-body { overflow-y:auto; padding:20px 24px; flex:1; font-size:0.82rem; color:#1A1814; line-height:1.75; }
+    .pm-body h3 { font-size:0.82rem; font-weight:700; margin:0 0 5px; color:#1A1814; }
+    .pm-body p { margin:0 0 14px; color:#4A4541; }
+    .pm-body a { color:#1A1814; font-weight:600; }
+    .pm-body hr { border:none; border-top:1px solid #E0DDD5; margin:14px 0; }
+    .pm-foot { padding:14px 24px 18px; border-top:1px solid #E0DDD5; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .pm-full-link { font-size:0.75rem; color:#6B6560; text-decoration:underline; white-space:nowrap; }
+    .pm-ok { background:#1A1814; color:#F4F1EA; border:none; border-radius:10px; padding:10px 24px; font-size:0.82rem; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; letter-spacing:0.2px; }
+    .pm-ok:hover { background:#2D2A25; }
 
     /* Visual panel */
     .visual-panel { position: relative; overflow: hidden; background: #1A1814; }
@@ -278,7 +306,15 @@
                 <span id="error-msg"></span>
             </div>
 
-            <div id="google-signin-btn" class="google-btn-wrap"></div>
+            <div class="google-btn-gate" id="google-btn-gate">
+                <div class="google-btn-gate-overlay" id="google-btn-overlay" onclick="showConsentHint()"></div>
+                <div id="google-signin-btn" class="google-btn-wrap"></div>
+            </div>
+            <div class="consent-row">
+                <input type="checkbox" class="consent-cb" id="consent-cb" onchange="toggleConsent(this)">
+                <label class="consent-label" for="consent-cb">I agree to the <button class="consent-link" onclick="openPrivacyModal()">Privacy Policy</button></label>
+            </div>
+            <p class="consent-hint" id="consent-hint"></p>
 
         </div>
 
@@ -463,6 +499,36 @@
 })();
 
 /* ═══════════════════════════════════════
+   PRIVACY CONSENT
+═══════════════════════════════════════ */
+let _consentGiven = false;
+
+function toggleConsent(cb) {
+    _consentGiven = cb.checked;
+    const gate = document.getElementById('google-btn-gate');
+    if (gate) gate.classList.toggle('consented', _consentGiven);
+    if (_consentGiven) document.getElementById('consent-hint').textContent = '';
+}
+
+function showConsentHint() {
+    const h = document.getElementById('consent-hint');
+    if (!h) return;
+    h.textContent = 'Please agree to the Privacy Policy to continue';
+    clearTimeout(h._hideTimer);
+    h._hideTimer = setTimeout(() => { h.textContent = ''; }, 2800);
+}
+
+function openPrivacyModal() {
+    const m = document.getElementById('privacy-modal');
+    if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+}
+
+function closePrivacyModal() {
+    const m = document.getElementById('privacy-modal');
+    if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
+}
+
+/* ═══════════════════════════════════════
    GOOGLE SIGN-IN
 ═══════════════════════════════════════ */
 const BACKEND_URL      = 'https://web-production-6f8843.up.railway.app';
@@ -480,6 +546,7 @@ window.addEventListener('load', function () {
 });
 
 async function handleGoogleCredential(response) {
+    if (!_consentGiven) { showConsentHint(); return; }
     const payload = decodeGoogleJwt(response.credential);
     if (!payload?.email) {
         showError("Couldn't read your Google account. Please try again.");
@@ -606,6 +673,47 @@ async function handleRoleSelect() {
     window.location.href = 'pricing.html?role=' + _selectedRole;
 }
 </script>
+<!-- Privacy Policy Modal -->
+<div id="privacy-modal">
+  <div class="pm-box">
+    <div class="pm-head">
+      <h2 class="pm-title">Privacy Policy</h2>
+      <button class="pm-close" onclick="closePrivacyModal()" title="Close">&#x2715;</button>
+    </div>
+    <div class="pm-body">
+      <p style="color:#6B6560;font-size:0.75rem;margin:0 0 18px;">Last updated: July 2, 2026 &nbsp;·&nbsp; <a href="privacy.html" target="_blank">Read full policy &#x2197;</a></p>
+
+      <h3>What We Collect</h3>
+      <p>When you sign in with Google, we receive your email address and display name. When you use Atlas, we receive the exam papers, photos, or documents you upload for analysis.</p>
+
+      <h3>How We Use Your Data</h3>
+      <p>Your data is used solely to provide the Atlas service — generating exam analysis, summaries, and study materials. Uploaded content is processed by AI and is not stored beyond your session.</p>
+
+      <h3>Google Sign-In</h3>
+      <p>We use Google OAuth to authenticate you. We only receive your email and name — we never see or store your Google password.</p>
+
+      <h3>Third-Party Services</h3>
+      <p>We use Google Gemini AI to process your exam content, and Supabase for secure account data storage. These services are governed by their own privacy policies.</p>
+
+      <h3>Data Security &amp; Retention</h3>
+      <p>All data is transmitted over HTTPS. Account information is retained while your account is active. You may request deletion at any time by contacting us.</p>
+
+      <h3>Children's Privacy</h3>
+      <p>Atlas is not directed at children under 13. If you believe a child has provided us data, please contact us immediately.</p>
+
+      <h3>Your Rights</h3>
+      <p>You have the right to access, correct, or delete your personal data. Contact us at <a href="mailto:contact.gexoai@gmail.com">contact.gexoai@gmail.com</a> to exercise these rights.</p>
+
+      <hr>
+      <p style="font-size:0.75rem;color:#6B6560;margin:0;">&#x202B;النسخة العربية الكاملة متاحة في <a href="privacy.html" target="_blank">سياسة الخصوصية الكاملة</a>.&#x202C; بالموافقة، فإنك تقبل هذه السياسة.</p>
+    </div>
+    <div class="pm-foot">
+      <a href="privacy.html" target="_blank" class="pm-full-link">Full policy &#x2197;</a>
+      <button class="pm-ok" onclick="closePrivacyModal()">I Understand</button>
+    </div>
+  </div>
+</div>
+
 <footer style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:7px 0;font-family:'Inter',-apple-system,sans-serif;font-size:0.68rem;letter-spacing:0.3px;color:#B0ABA3;background:rgba(244,241,234,0.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-top:1px solid rgba(224,221,213,0.5);z-index:9999;pointer-events:none;">Powered by <strong style="font-weight:600;color:#9E9A94;">GEXO AI</strong> &nbsp;·&nbsp; For support: <a href="mailto:contact.gexoai@gmail.com" style="color:#9E9A94;font-weight:600;text-decoration:none;pointer-events:auto;">contact.gexoai@gmail.com</a> &nbsp;·&nbsp; <a href="privacy.html" style="color:#9E9A94;font-weight:600;text-decoration:none;pointer-events:auto;">Privacy Policy</a></footer>
 </body>
 </html>
