@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atlas — Payment</title>
+    <title>Atlas — Checkout</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -17,6 +17,7 @@
         --text-3: #9E9A94;
         --border: #E0DDD5;
         --white:  #FFFFFF;
+        --green:  #059669;
     }
 
     html, body { -webkit-font-smoothing: antialiased; font-family: 'Inter', -apple-system, sans-serif; }
@@ -49,7 +50,7 @@
         align-items: center;
         justify-content: space-between;
         padding: 0 44px;
-        background: rgba(244,241,234,0.82);
+        background: rgba(244,241,234,0.88);
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
         border-bottom: 1px solid var(--border);
@@ -75,207 +76,427 @@
     }
     .nav-back:hover { background: var(--white); color: var(--text); border-color: rgba(26,24,20,0.18); }
 
-    /* ── Main ── */
+    /* ── Main layout ── */
     main {
         position: relative;
         z-index: 1;
         flex: 1;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
-        padding: 48px 24px 72px;
+        padding: 52px 24px 100px;
     }
 
-    /* ── Card ── */
-    .payment-card {
-        background: var(--white);
-        border: 1px solid var(--border);
-        border-radius: 22px;
+    .checkout-wrap {
+        display: flex;
+        align-items: flex-start;
+        gap: 24px;
         width: 100%;
-        max-width: 480px;
-        box-shadow: 0 8px 40px rgba(26,24,20,0.10);
-        overflow: hidden;
-        animation: rise 0.55s cubic-bezier(0.34,1.2,0.64,1) both;
+        max-width: 860px;
+        animation: rise 0.5s cubic-bezier(0.34,1.2,0.64,1) both;
     }
 
     @keyframes rise {
-        from { opacity: 0; transform: translateY(24px); }
+        from { opacity: 0; transform: translateY(22px); }
         to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Plan summary bar */
-    .plan-bar {
-        background: rgba(26,24,20,0.03);
-        border-bottom: 1px solid var(--border);
-        padding: 16px 28px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
+    /* ── Summary panel (left) ── */
+    .summary-panel {
+        flex: 1.15;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 30px 28px 28px;
     }
 
-    .plan-bar-label {
-        font-size: 0.72rem;
+    .panel-eyebrow {
+        font-size: 0.68rem;
         font-weight: 700;
-        letter-spacing: 0.7px;
+        letter-spacing: 0.8px;
         text-transform: uppercase;
         color: var(--text-3);
+        margin-bottom: 18px;
     }
 
-    .plan-bar-value {
+    .plan-header {
         display: flex;
         align-items: center;
-        gap: 8px;
         flex-wrap: wrap;
-        justify-content: flex-end;
+        gap: 8px;
+        margin-bottom: 6px;
     }
 
-    .plan-pill {
+    .badge {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        background: var(--text);
-        color: var(--bg);
-        font-size: 0.75rem;
-        font-weight: 700;
         border-radius: 99px;
         padding: 4px 12px;
+        font-size: 0.74rem;
+        font-weight: 700;
         letter-spacing: -0.1px;
     }
 
-    .billing-pill {
+    .badge-role { background: var(--text); color: var(--bg); }
+    .badge-plan { background: rgba(26,24,20,0.07); color: var(--text); border: 1px solid rgba(26,24,20,0.12); }
+    .badge-billing { background: rgba(26,24,20,0.04); color: var(--text-2); border: 1px solid var(--border); }
+
+    .plan-tagline {
+        font-size: 0.8rem;
+        color: var(--text-3);
+        margin-bottom: 22px;
+        line-height: 1.5;
+    }
+
+    .panel-divider { border: none; border-top: 1px solid var(--border); margin: 0 0 20px; }
+
+    .feature-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 22px;
+    }
+
+    .feature-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 0.84rem;
+        color: var(--text-2);
+        line-height: 1.45;
+    }
+
+    .feature-list li strong { color: var(--text); font-weight: 600; }
+
+    .ck {
         display: inline-flex;
         align-items: center;
-        background: rgba(26,24,20,0.06);
-        border: 1px solid rgba(26,24,20,0.10);
-        color: var(--text-2);
+        justify-content: center;
+        flex-shrink: 0;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: rgba(5,150,105,0.08);
+        border: 1px solid rgba(5,150,105,0.22);
+        margin-top: 1px;
+    }
+
+    .trial-note {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(5,150,105,0.06);
+        border: 1px solid rgba(5,150,105,0.18);
+        border-radius: 10px;
+        padding: 11px 14px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--green);
+        line-height: 1.45;
+    }
+
+    /* ── Payment panel (right) ── */
+    .pay-panel {
+        flex: 0.88;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .pay-card {
+        background: var(--white);
+        border: 1.5px solid var(--text);
+        border-radius: 20px;
+        padding: 28px 26px 24px;
+        box-shadow: 0 16px 48px rgba(26,24,20,0.12);
+    }
+
+    .pay-eyebrow {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        color: var(--text-3);
+        margin-bottom: 20px;
+    }
+
+    .price-section { margin-bottom: 22px; }
+
+    .price-due-label {
         font-size: 0.75rem;
         font-weight: 600;
-        border-radius: 99px;
-        padding: 4px 12px;
+        color: var(--text-3);
+        margin-bottom: 6px;
     }
 
-    /* Body content */
-    .card-body {
-        padding: 40px 36px 36px;
-        text-align: center;
+    .price-usd-row {
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+        line-height: 1;
+        margin-bottom: 4px;
     }
 
-    /* Lock icon */
-    .lock-wrap {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
+    .price-dollar { font-size: 1.4rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .price-amount { font-size: 3.2rem; font-weight: 800; letter-spacing: -2px; color: var(--text); }
+    .price-per { font-size: 0.82rem; color: var(--text-3); font-weight: 500; margin-bottom: 8px; }
+
+    .price-local {
+        display: none;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+        flex-wrap: wrap;
+    }
+
+    .price-local-value {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text-2);
+    }
+
+    .price-local-note {
+        font-size: 0.68rem;
+        color: var(--text-3);
         background: rgba(26,24,20,0.05);
         border: 1px solid var(--border);
+        border-radius: 99px;
+        padding: 2px 8px;
+    }
+
+    .price-disclaimer {
+        font-size: 0.68rem;
+        color: var(--text-3);
+        margin-top: 6px;
+        line-height: 1.5;
+        display: none;
+    }
+
+    .btn-pay {
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 24px;
-    }
-
-    .card-title {
-        font-size: 1.5rem;
-        font-weight: 800;
-        letter-spacing: -0.6px;
-        color: var(--text);
-        margin-bottom: 12px;
-    }
-
-    .card-body p {
-        font-size: 0.9rem;
-        color: var(--text-2);
-        line-height: 1.7;
-        max-width: 360px;
-        margin: 0 auto 32px;
-    }
-
-    /* Info list */
-    .info-list {
-        list-style: none;
-        text-align: left;
-        background: rgba(26,24,20,0.025);
-        border: 1px solid var(--border);
+        gap: 9px;
+        width: 100%;
+        padding: 14px 20px;
         border-radius: 12px;
-        padding: 16px 18px;
-        margin-bottom: 28px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        cursor: pointer;
+        border: none;
+        background: var(--text);
+        color: #F4F1EA;
+        box-shadow: 0 4px 18px rgba(26,24,20,0.22);
+        transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+        margin-bottom: 18px;
+    }
+
+    .btn-pay:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 26px rgba(26,24,20,0.28);
+    }
+
+    .btn-pay:active { transform: translateY(0); }
+
+    /* Trust signals */
+    .trust-row {
         display: flex;
         flex-direction: column;
         gap: 8px;
+        padding-top: 4px;
+        border-top: 1px solid var(--border);
+        margin-top: 2px;
     }
 
-    .info-list li {
+    .trust-item {
         display: flex;
         align-items: center;
-        gap: 10px;
-        font-size: 0.83rem;
-        color: var(--text-2);
+        gap: 9px;
+        font-size: 0.78rem;
+        color: var(--text-3);
+        font-weight: 500;
     }
 
-    .info-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: var(--text-3);
+    .trust-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: rgba(26,24,20,0.04);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
     }
 
-    /* Buttons */
-    .btn-primary {
+    /* Local currency loading state */
+    .geo-loading {
+        display: inline-block;
+        width: 60px;
+        height: 10px;
+        background: linear-gradient(90deg, var(--border) 25%, rgba(224,221,213,0.4) 50%, var(--border) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.2s infinite;
+        border-radius: 5px;
+        vertical-align: middle;
+    }
+
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ── Notify modal ── */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(26,24,20,0.50);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        z-index: 1000;
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 20px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+    }
+
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+
+    .notify-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 36px 32px 28px;
+        max-width: 420px;
         width: 100%;
-        padding: 13px;
-        border-radius: 11px;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.9rem;
-        font-weight: 700;
-        cursor: pointer;
-        text-decoration: none;
-        background: var(--text);
-        color: #F4F1EA;
-        border: none;
-        box-shadow: 0 3px 14px rgba(26,24,20,0.18);
-        transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+        text-align: center;
+        box-shadow: 0 24px 64px rgba(26,24,20,0.18);
+        transform: scale(0.95) translateY(10px);
+        transition: transform 0.25s cubic-bezier(0.34,1.2,0.64,1);
+    }
+
+    .modal-overlay.show .notify-card { transform: scale(1) translateY(0); }
+
+    .notify-icon {
+        font-size: 2.4rem;
+        margin-bottom: 16px;
+        line-height: 1;
+    }
+
+    .notify-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        color: var(--text);
         margin-bottom: 10px;
     }
-    .btn-primary:hover {
-        opacity: 0.88;
-        transform: translateY(-1px);
-        box-shadow: 0 6px 22px rgba(26,24,20,0.22);
+
+    .notify-body {
+        font-size: 0.85rem;
+        color: var(--text-2);
+        line-height: 1.7;
+        margin-bottom: 22px;
     }
 
-    .btn-outline {
+    .notify-input-wrap {
         display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .notify-input {
+        flex: 1;
+        padding: 10px 14px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
+        color: var(--text);
+        background: var(--bg);
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .notify-input:focus { border-color: var(--text); }
+    .notify-input::placeholder { color: var(--text-3); }
+
+    .notify-input.error { border-color: #B91C1C; }
+
+    .btn-notify {
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        background: var(--text);
+        color: #F4F1EA;
+        white-space: nowrap;
+        transition: opacity 0.2s;
+    }
+
+    .btn-notify:hover { opacity: 0.85; }
+
+    .notify-success {
+        display: none;
         align-items: center;
         justify-content: center;
-        width: 100%;
-        padding: 12px;
-        border-radius: 11px;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.875rem;
+        gap: 8px;
+        background: rgba(5,150,105,0.07);
+        border: 1px solid rgba(5,150,105,0.2);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 0.84rem;
         font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        background: transparent;
-        color: var(--text-2);
-        border: 1.5px solid var(--border);
-        transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
-    }
-    .btn-outline:hover {
-        background: rgba(26,24,20,0.04);
-        border-color: rgba(26,24,20,0.22);
-        color: var(--text);
-        transform: translateY(-1px);
+        color: var(--green);
+        margin-bottom: 12px;
     }
 
-    @media (max-width: 520px) {
+    .notify-contact {
+        font-size: 0.74rem;
+        color: var(--text-3);
+        line-height: 1.6;
+        margin-bottom: 16px;
+    }
+
+    .notify-contact a { color: var(--text-2); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+
+    .btn-dismiss {
+        display: block;
+        width: 100%;
+        border: none;
+        background: none;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.8rem;
+        color: var(--text-3);
+        cursor: pointer;
+        padding: 8px;
+        transition: color 0.2s;
+    }
+
+    .btn-dismiss:hover { color: var(--text-2); }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
         .nav { padding: 0 20px; }
-        main { padding: 32px 16px 56px; }
-        .card-body { padding: 32px 24px 28px; }
-        .plan-bar { padding: 14px 20px; flex-direction: column; align-items: flex-start; }
-        .plan-bar-value { justify-content: flex-start; }
+        main { padding: 32px 16px 88px; }
+        .checkout-wrap { flex-direction: column; gap: 16px; }
+        .summary-panel { padding: 24px 20px 22px; }
+        .pay-card { padding: 24px 20px 20px; }
+        .price-amount { font-size: 2.6rem; }
+        .notify-card { padding: 28px 22px 22px; }
+        .notify-input-wrap { flex-direction: column; }
+        .btn-notify { width: 100%; padding: 12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .checkout-wrap { animation: none; opacity: 1; }
+        .notify-card { transition: none; }
     }
     </style>
 </head>
@@ -290,80 +511,320 @@
 </nav>
 
 <main>
-    <div class="payment-card">
+    <div class="checkout-wrap">
 
-        <!-- Plan summary bar -->
-        <div class="plan-bar">
-            <span class="plan-bar-label">Selected plan</span>
-            <div class="plan-bar-value">
-                <span class="plan-pill" id="plan-pill">Pro</span>
-                <span class="billing-pill" id="billing-pill">Monthly</span>
-                <span class="billing-pill" id="price-pill">$8.99 / mo</span>
+        <!-- ── Left: Order summary ── -->
+        <div class="summary-panel">
+            <div class="panel-eyebrow">Order Summary</div>
+
+            <div class="plan-header">
+                <span class="badge badge-role" id="badge-role">Student</span>
+                <span class="badge badge-plan">Pro</span>
+                <span class="badge badge-billing" id="badge-billing">Monthly</span>
+            </div>
+            <p class="plan-tagline" id="plan-tagline">The full Atlas experience.</p>
+
+            <hr class="panel-divider">
+
+            <ul class="feature-list" id="feature-list"></ul>
+
+            <div class="trial-note">
+                <svg width="14" height="11" viewBox="0 0 14 11" fill="none">
+                    <path d="M1.5 5.5L5 9L12.5 1.5" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                14-day free trial included — no charge until it ends.
             </div>
         </div>
 
-        <!-- Body -->
-        <div class="card-body">
-            <div class="lock-wrap">
-                <svg width="26" height="28" viewBox="0 0 26 30" fill="none">
-                    <rect x="1" y="13" width="24" height="16" rx="4" stroke="#1A1814" stroke-width="2"/>
-                    <path d="M7 13V9a6 6 0 0 1 12 0v4" stroke="#1A1814" stroke-width="2" stroke-linecap="round"/>
-                    <circle cx="13" cy="21" r="2" fill="#1A1814"/>
-                </svg>
+        <!-- ── Right: Payment ── -->
+        <div class="pay-panel">
+            <div class="pay-card">
+                <div class="pay-eyebrow">Complete your order</div>
+
+                <div class="price-section">
+                    <div class="price-due-label">Total due today</div>
+                    <div class="price-usd-row">
+                        <span class="price-dollar">$</span>
+                        <span class="price-amount" id="price-amount">—</span>
+                        <span class="price-per" id="price-per">/ mo</span>
+                    </div>
+
+                    <div class="price-local" id="price-local">
+                        <span class="price-local-value" id="local-value"></span>
+                        <span class="price-local-note">approximate</span>
+                    </div>
+                    <p class="price-disclaimer" id="price-disclaimer">
+                        Final charge is processed in USD. Local amount is approximate.
+                    </p>
+                </div>
+
+                <button class="btn-pay" onclick="handlePay()">
+                    <svg width="14" height="16" viewBox="0 0 14 18" fill="none">
+                        <rect x="1" y="8" width="12" height="9" rx="2.5" stroke="#F4F1EA" stroke-width="1.8"/>
+                        <path d="M4 8V5.5a3 3 0 0 1 6 0V8" stroke="#F4F1EA" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    Pay Securely
+                </button>
+
+                <div class="trust-row">
+                    <div class="trust-item">
+                        <div class="trust-icon">
+                            <svg width="12" height="14" viewBox="0 0 12 15" fill="none">
+                                <path d="M6 1L1 3.5v4C1 10.5 3.2 13.2 6 14c2.8-.8 5-3.5 5-6.5v-4L6 1Z" stroke="#6B6560" stroke-width="1.5" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        Secured payment processing
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-icon">
+                            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                <path d="M7 1v6l3.5 3.5" stroke="#6B6560" stroke-width="1.5" stroke-linecap="round"/>
+                                <circle cx="7" cy="7" r="6" stroke="#6B6560" stroke-width="1.5"/>
+                            </svg>
+                        </div>
+                        Cancel anytime, no questions asked
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-icon">
+                            <svg width="11" height="14" viewBox="0 0 11 15" fill="none">
+                                <path d="M6.5 1L1 8.5h4.5L4.5 14l5.5-7.5H5.5L6.5 1Z" stroke="#6B6560" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        Instant activation after payment
+                    </div>
+                </div>
             </div>
-
-            <h1 class="card-title">Payment coming soon</h1>
-            <p>
-                We're setting up secure payment processing. Your plan selection has been saved
-                — you'll receive an email as soon as billing goes live.
-            </p>
-
-            <ul class="info-list">
-                <li><span class="info-dot"></span>Your selection is saved to your account</li>
-                <li><span class="info-dot"></span>No charge until billing is activated</li>
-                <li><span class="info-dot"></span>You'll be notified by email first</li>
-            </ul>
-
-            <a href="student_dashboard.html" class="btn-primary" id="dashboard-btn">
-                Continue to Dashboard →
-            </a>
-            <a href="pricing.html" class="btn-outline" id="plans-btn">
-                ← Back to Plans
-            </a>
         </div>
 
     </div>
 </main>
 
+<!-- ── Notify Me modal ── -->
+<div class="modal-overlay" id="notify-modal" onclick="handleOverlayClick(event)">
+    <div class="notify-card">
+        <div class="notify-icon">🚀</div>
+        <h2 class="notify-title">Payments launching soon!</h2>
+        <p class="notify-body">
+            We're finalizing our secure payment provider. Enter your email and we'll notify you the moment checkout opens.
+        </p>
+
+        <div id="notify-form">
+            <div class="notify-input-wrap">
+                <input type="email" class="notify-input" id="notify-email" placeholder="your@email.com">
+                <button class="btn-notify" onclick="submitNotify()">Notify Me</button>
+            </div>
+        </div>
+
+        <div class="notify-success" id="notify-success">
+            <svg width="14" height="11" viewBox="0 0 14 11" fill="none">
+                <path d="M1.5 5.5L5 9L12.5 1.5" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            You're on the list! We'll email you when it's ready.
+        </div>
+
+        <p class="notify-contact">
+            Questions or urgent access? Email us at<br>
+            <a href="mailto:contact.gexoai@gmail.com">contact.gexoai@gmail.com</a>
+        </p>
+
+        <button class="btn-dismiss" onclick="closeNotifyModal()">Maybe later</button>
+    </div>
+</div>
+
+<footer style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:7px 0;font-family:'Inter',-apple-system,sans-serif;font-size:0.68rem;letter-spacing:0.3px;color:#B0ABA3;background:rgba(244,241,234,0.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-top:1px solid rgba(224,221,213,0.5);z-index:9999;pointer-events:none;">Powered by <strong style="font-weight:600;color:#9E9A94;">GEXO AI</strong> &nbsp;·&nbsp; For support: <a href="mailto:contact.gexoai@gmail.com" style="color:#9E9A94;font-weight:600;text-decoration:none;pointer-events:auto;">contact.gexoai@gmail.com</a> &nbsp;·&nbsp; <a href="privacy.html" style="color:#9E9A94;font-weight:600;text-decoration:none;pointer-events:auto;">Privacy Policy</a></footer>
+
 <script>
-const PERIOD_LABELS = { weekly: 'Weekly', monthly: 'Monthly', yearly: 'Yearly' };
-const PERIOD_SUFFIX = { weekly: '/ wk', monthly: '/ mo', yearly: '/ yr' };
-const DASHBOARDS = {
-    student: 'student_dashboard.html',
-    teacher: 'teacher_dashboard.html',
-    school:  'school_dashboard.html',
+/* ══════════════════════════════════════════
+   PLAN DATA
+══════════════════════════════════════════ */
+const PLANS = {
+    student: {
+        label: 'Student',
+        tagline: 'Everything you need to ace your exams.',
+        dashboard: 'student_dashboard.html',
+        prices: { weekly: 4.99, monthly: 8.99, yearly: 79 },
+        features: [
+            { text: '<strong>300 operations</strong> per month', bold: true },
+            { text: 'Full AI exam analysis' },
+            { text: 'AI-powered summarization' },
+            { text: 'All question types' },
+            { text: 'Priority processing' },
+            { text: 'PDF export' },
+        ],
+    },
+    teacher: {
+        label: 'Teacher',
+        tagline: 'The complete toolkit for teaching excellence.',
+        dashboard: 'teacher_dashboard.html',
+        prices: { weekly: 7.99, monthly: 14.99, yearly: 129 },
+        features: [
+            { text: '<strong>400 operations</strong> per month', bold: true },
+            { text: 'AI exam generation' },
+            { text: 'Custom difficulty & type controls' },
+            { text: 'Student performance insights' },
+            { text: 'Priority processing' },
+            { text: 'PDF export' },
+        ],
+    },
 };
 
-const user = JSON.parse(localStorage.getItem('atlas_user') || '{}');
+const PERIOD_LABEL = { weekly: 'Weekly', monthly: 'Monthly', yearly: 'Yearly' };
+const PERIOD_SUFFIX = { weekly: '/ wk', monthly: '/ mo', yearly: '/ yr' };
 
-const role    = user.planRole  || user.role || 'student';
-const billing = user.billing   || 'monthly';
-const price   = user.planPrice;
-const plan    = user.plan      || 'pro';
+/* ══════════════════════════════════════════
+   CURRENCY CONFIG
+   Rates vs USD — marked as approximate
+══════════════════════════════════════════ */
+const EU_CODES = new Set([
+    'DE','FR','IT','ES','NL','BE','AT','GR','PT','FI',
+    'IE','LU','SK','SI','EE','LV','LT','MT','CY'
+]);
 
-const roleLabel    = role.charAt(0).toUpperCase() + role.slice(1);
-const billingLabel = PERIOD_LABELS[billing] || 'Monthly';
-const suffix       = PERIOD_SUFFIX[billing]  || '/ mo';
+const COUNTRY_CURRENCY = {
+    EG: { code: 'EGP', symbol: 'EGP',  rate: 50,   decimals: 0 },
+    SA: { code: 'SAR', symbol: 'SAR',  rate: 3.75,  decimals: 0 },
+    AE: { code: 'AED', symbol: 'AED',  rate: 3.67,  decimals: 0 },
+    IN: { code: 'INR', symbol: '₹',    rate: 84,    decimals: 0 },
+    GB: { code: 'GBP', symbol: '£',    rate: 0.79,  decimals: 2 },
+};
+const EUR_CURRENCY = { code: 'EUR', symbol: '€', rate: 0.92, decimals: 2 };
 
-document.getElementById('plan-pill').textContent    = roleLabel + ' ' + plan.charAt(0).toUpperCase() + plan.slice(1);
-document.getElementById('billing-pill').textContent = billingLabel;
-document.getElementById('price-pill').textContent   = price != null ? '$' + (Number.isInteger(price) ? price : price.toFixed(2)) + ' ' + suffix : '—';
+function getCurrencyForCountry(cc) {
+    if (EU_CODES.has(cc)) return EUR_CURRENCY;
+    return COUNTRY_CURRENCY[cc] || null;
+}
 
-const dashboard = DASHBOARDS[role] || 'student_dashboard.html';
-document.getElementById('dashboard-btn').href = dashboard;
-document.getElementById('back-link').href     = 'pricing.html?role=' + role;
-document.getElementById('plans-btn').href     = 'pricing.html?role=' + role;
+function formatLocal(usdAmount, currency) {
+    const raw = usdAmount * currency.rate;
+    const val = currency.decimals === 0
+        ? Math.round(raw)
+        : parseFloat(raw.toFixed(2));
+    const num = currency.decimals === 0 ? val.toLocaleString() : val.toFixed(2);
+    if (['£','€','₹'].includes(currency.symbol)) return currency.symbol + num;
+    return num + ' ' + currency.symbol;
+}
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+let _role    = 'student';
+let _billing = 'monthly';
+let _price   = null;
+
+window.addEventListener('DOMContentLoaded', function () {
+    /* Read params: URL first, localStorage fallback */
+    const params = new URLSearchParams(window.location.search);
+    const user   = JSON.parse(localStorage.getItem('atlas_user') || '{}');
+
+    const planParam = params.get('plan') || user.plan || 'pro';
+    if (planParam === 'free') {
+        window.location.replace(user.role === 'teacher'
+            ? 'teacher_dashboard.html' : 'student_dashboard.html');
+        return;
+    }
+
+    const roleParam = params.get('role') || user.planRole || user.role || 'student';
+    _role    = PLANS[roleParam] ? roleParam : 'student';
+    _billing = params.get('billing') || user.billing || 'monthly';
+    if (!['weekly','monthly','yearly'].includes(_billing)) _billing = 'monthly';
+
+    const cfg = PLANS[_role];
+    _price = params.get('price') != null
+        ? parseFloat(params.get('price'))
+        : (user.planPrice != null ? user.planPrice : cfg.prices[_billing]);
+
+    /* Populate summary */
+    document.getElementById('badge-role').textContent    = cfg.label;
+    document.getElementById('badge-billing').textContent = PERIOD_LABEL[_billing];
+    document.getElementById('plan-tagline').textContent  = cfg.tagline;
+
+    const CHECK = `<svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#059669" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    document.getElementById('feature-list').innerHTML = cfg.features
+        .map(f => `<li><span class="ck">${CHECK}</span>${f.text}</li>`)
+        .join('');
+
+    /* Populate price */
+    const amtText = _price != null
+        ? (Number.isInteger(_price) ? String(_price) : _price.toFixed(2))
+        : '—';
+    document.getElementById('price-amount').textContent = amtText;
+    document.getElementById('price-per').textContent    = PERIOD_SUFFIX[_billing];
+
+    /* Back link */
+    document.getElementById('back-link').href = 'pricing.html?role=' + _role;
+
+    /* Detect location for local currency */
+    detectLocalCurrency();
+});
+
+/* ══════════════════════════════════════════
+   GEOLOCATION & LOCAL PRICE
+══════════════════════════════════════════ */
+function detectLocalCurrency() {
+    if (_price == null) return;
+    fetch('https://ipapi.co/json/')
+        .then(r => r.json())
+        .then(data => {
+            const cc = data.country_code || '';
+            const currency = getCurrencyForCountry(cc);
+            if (!currency) return;
+            const localStr = formatLocal(_price, currency);
+            document.getElementById('local-value').textContent = '≈ ' + localStr;
+            document.getElementById('price-local').style.display = 'flex';
+            document.getElementById('price-disclaimer').style.display = 'block';
+        })
+        .catch(() => { /* geolocation failed — silently omit local price */ });
+}
+
+/* ══════════════════════════════════════════
+   PAY BUTTON
+══════════════════════════════════════════ */
+function handlePay() {
+    openNotifyModal();
+}
+
+/* ══════════════════════════════════════════
+   NOTIFY MODAL
+══════════════════════════════════════════ */
+function openNotifyModal() {
+    document.getElementById('notify-modal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('notify-email').focus(), 250);
+}
+
+function closeNotifyModal() {
+    document.getElementById('notify-modal').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+    if (e.target === e.currentTarget) closeNotifyModal();
+}
+
+function submitNotify() {
+    const input = document.getElementById('notify-email');
+    const email = input.value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        input.classList.add('error');
+        input.focus();
+        setTimeout(() => input.classList.remove('error'), 1800);
+        return;
+    }
+
+    /* Save to localStorage */
+    const list = JSON.parse(localStorage.getItem('atlas_notify_list') || '[]');
+    if (!list.includes(email)) {
+        list.push(email);
+        localStorage.setItem('atlas_notify_list', JSON.stringify(list));
+    }
+
+    /* Switch to success state */
+    document.getElementById('notify-form').style.display = 'none';
+    const success = document.getElementById('notify-success');
+    success.style.display = 'flex';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNotifyModal(); });
 </script>
-<footer style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:7px 0;font-family:'Inter',-apple-system,sans-serif;font-size:0.68rem;letter-spacing:0.3px;color:#B0ABA3;background:rgba(244,241,234,0.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-top:1px solid rgba(224,221,213,0.5);z-index:9999;pointer-events:none;">Powered by <strong style="font-weight:600;color:#9E9A94;">GEXO AI</strong> &nbsp;·&nbsp; For support: <a href="mailto:contact.gexoai@gmail.com" style="color:#9E9A94;font-weight:600;text-decoration:none;pointer-events:auto;">contact.gexoai@gmail.com</a> &nbsp;·&nbsp; <a href="privacy.html" style="color:#9E9A94;font-weight:600;text-decoration:none;pointer-events:auto;">Privacy Policy</a></footer>
 </body>
 </html>
