@@ -513,16 +513,6 @@
     <p class="hero-sub" id="page-sub">Choose the plan that fits your needs.</p>
 </section>
 
-<div class="toggle-wrap">
-    <div class="toggle-track">
-        <button class="toggle-btn" data-period="weekly" id="btn-weekly" onclick="setPeriod('weekly')">Weekly</button>
-        <button class="toggle-btn active" data-period="monthly" onclick="setPeriod('monthly')">Monthly</button>
-        <button class="toggle-btn" data-period="yearly" onclick="setPeriod('yearly')">
-            Yearly <span class="save-chip" id="save-chip-txt">Save up to 28%</span>
-        </button>
-    </div>
-</div>
-
 <div class="cards-wrap">
     <div class="cards-grid" id="cards-grid">
 
@@ -553,14 +543,14 @@
             <div class="price-block">
                 <div class="price-row">
                     <span class="price-currency" id="cur-pro">$</span>
-                    <span class="price-amount" id="amt-pro">8.99</span>
+                    <span class="price-amount" id="amt-pro">6.99</span>
                 </div>
                 <div class="price-period" id="per-pro">/ month</div>
                 <div class="savings-badge" id="sav-pro"></div>
             </div>
             <hr class="card-divider">
             <ul class="features" id="pro-features"></ul>
-            <button class="btn-cta btn-cta-pro" id="pro-cta" onclick="selectPro()">Get Pro</button>
+            <a class="btn-cta btn-cta-pro" id="pro-cta" href="javascript:void(0)">Get Pro</a>
         </div>
 
     </div>
@@ -581,7 +571,7 @@
         </div>
         <h2 class="modal-title">You're on the Free Plan</h2>
         <p class="modal-body" id="modal-body">
-            You have access to 10 operations per month with basic AI analysis. Upgrade anytime to unlock more.
+            You have access to 4 exam analyses and 4 document summaries per month with basic AI analysis. Upgrade anytime to unlock more.
         </p>
         <a href="student_dashboard.html" class="btn-cta btn-cta-pro modal-cta" id="modal-cta">
             Continue to Dashboard →
@@ -598,18 +588,16 @@ const ROLE_CONFIG = {
         sub:       'Pick the right plan for your exam journey.',
         dashboard: 'student_dashboard.html',
         showFree:  true,
-        hasWeekly: true,
-        saveChip:  'Save up to 27%',
         free: {
             desc:     'Start exploring AI exam tools at no cost.',
-            features: ['10 operations per month', 'Basic AI analysis', 'Community support'],
+            features: ['4 exam analyses per month', '4 document summaries per month', 'Basic AI analysis', 'Community support'],
         },
         pro: {
             desc:     'Everything you need to ace your exams.',
-            weekly: 4.99, monthly: 8.99, yearly: 79,
-            savings:  'Save 27%',
+            monthly:  6.99,
             cta:      'Get Student Pro',
-            features: ['300 operations per month', 'All features unlocked', 'Priority processing', 'PDF export'],
+            gumroad:  true,
+            features: ['50 exam analyses per month', '50 document summaries per month', '20 custom exam creations per month', 'Priority support', 'PDF export', 'Cancel anytime'],
         },
     },
     teacher: {
@@ -617,18 +605,16 @@ const ROLE_CONFIG = {
         sub:       'Choose the tools that power your classroom.',
         dashboard: 'teacher_dashboard.html',
         showFree:  true,
-        hasWeekly: true,
-        saveChip:  'Save up to 28%',
         free: {
             desc:     'Start creating and analysing exams at no cost.',
-            features: ['10 operations per month', 'Basic AI analysis', 'Community support'],
+            features: ['4 exam analyses per month', '4 document summaries per month', 'Basic AI analysis', 'Community support'],
         },
         pro: {
             desc:     'The complete toolkit for teaching excellence.',
-            weekly: 7.99, monthly: 14.99, yearly: 129,
-            savings:  'Save 28%',
+            monthly:  6.99,
             cta:      'Get Teacher Pro',
-            features: ['400 operations per month', 'All features unlocked', 'Priority processing', 'PDF export'],
+            gumroad:  true,
+            features: ['50 exam analyses per month', '50 document summaries per month', '20 custom exam creations per month', 'Priority support', 'PDF export', 'Cancel anytime'],
         },
     },
     school: {
@@ -636,8 +622,6 @@ const ROLE_CONFIG = {
         sub:       'Empower your whole institution with Atlas Pro.',
         dashboard: 'school_dashboard.html',
         showFree:  false,
-        hasWeekly: false,
-        saveChip:  'Save 16%',
         pro: {
             desc:     'Manage your entire institution with Atlas.',
             weekly: null, monthly: 99, yearly: 999,
@@ -654,11 +638,9 @@ const ROLE_CONFIG = {
     },
 };
 
-const PERIOD_LABEL = { weekly: '/ week', monthly: '/ month', yearly: '/ year' };
 const CHECK_SVG = `<svg width="9" height="7" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#1A1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-let period = 'monthly';
-let role   = 'student';
+let role = 'student';
 
 /* ── Init ── */
 window.addEventListener('DOMContentLoaded', function () {
@@ -669,15 +651,9 @@ window.addEventListener('DOMContentLoaded', function () {
     /* Heading & sub */
     document.getElementById('page-title').textContent = cfg.title;
     document.getElementById('page-sub').textContent   = cfg.sub;
-    document.getElementById('save-chip-txt').textContent = cfg.saveChip;
 
     /* Nav back link */
     document.getElementById('nav-back').href = cfg.dashboard;
-
-    /* Weekly toggle visibility */
-    if (!cfg.hasWeekly) {
-        document.getElementById('btn-weekly').style.display = 'none';
-    }
 
     /* Free card */
     if (!cfg.showFree) {
@@ -692,16 +668,25 @@ window.addEventListener('DOMContentLoaded', function () {
     /* Pro card */
     document.getElementById('pro-name').textContent = role === 'school' ? 'School Pro' : 'Pro';
     document.getElementById('pro-desc').textContent = cfg.pro.desc;
-    document.getElementById('pro-cta').textContent  = cfg.pro.cta;
     renderFeatures('pro-features', cfg.pro.features);
+
+    /* Pro CTA — Gumroad checkout for Student/Teacher, existing flow for School */
+    const proCta = document.getElementById('pro-cta');
+    proCta.textContent = cfg.pro.cta;
+    if (cfg.pro.gumroad) {
+        proCta.href = 'https://gexocraft.gumroad.com/l/atlas-premium';
+        proCta.target = '_blank';
+        proCta.rel = 'noopener noreferrer';
+        proCta.onclick = null;
+    } else {
+        proCta.href = 'javascript:void(0)';
+        proCta.removeAttribute('target');
+        proCta.removeAttribute('rel');
+        proCta.onclick = function (e) { e.preventDefault(); selectPro(); };
+    }
 
     /* Modal dashboard link */
     document.getElementById('modal-cta').href = cfg.dashboard;
-
-    /* Apply transitions then update */
-    document.querySelectorAll('.price-currency, .price-amount, .price-period').forEach(el => {
-        el.style.transition = 'opacity 0.14s ease, transform 0.14s ease';
-    });
 
     updatePro();
 });
@@ -713,48 +698,10 @@ function renderFeatures(id, features) {
         .join('');
 }
 
-/* ── Period toggle ── */
-function setPeriod(p) {
-    period = p;
-    document.querySelectorAll('.toggle-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.period === p);
-    });
-    fadeAndUpdate();
-}
-
-function fadeAndUpdate() {
-    const els = document.querySelectorAll('#cur-pro, #amt-pro, #per-pro');
-    els.forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(5px)'; });
-    setTimeout(() => {
-        updatePro();
-        els.forEach(el => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; });
-    }, 120);
-}
-
+/* ── Price display (Monthly only — Gumroad has no weekly/yearly billing) ── */
 function updatePro() {
-    const cfg   = ROLE_CONFIG[role];
-    const price = cfg.pro[period];
-    const curEl = document.getElementById('cur-pro');
-    const amtEl = document.getElementById('amt-pro');
-    const perEl = document.getElementById('per-pro');
-    const savEl = document.getElementById('sav-pro');
-
-    if (price === null) {
-        curEl.style.visibility = 'hidden';
-        amtEl.textContent = '—';
-        perEl.textContent = '';
-        savEl.style.display = 'none';
-    } else {
-        curEl.style.visibility = 'visible';
-        amtEl.textContent = Number.isInteger(price) ? String(price) : price.toFixed(2);
-        perEl.textContent = PERIOD_LABEL[period];
-        if (period === 'yearly' && cfg.pro.savings) {
-            savEl.textContent   = cfg.pro.savings;
-            savEl.style.display = 'inline-flex';
-        } else {
-            savEl.style.display = 'none';
-        }
-    }
+    const price = ROLE_CONFIG[role].pro.monthly;
+    document.getElementById('amt-pro').textContent = Number.isInteger(price) ? String(price) : price.toFixed(2);
 }
 
 /* ── Plan selection ── */
@@ -766,11 +713,12 @@ function selectFree() {
 }
 
 function selectPro() {
+    /* Only reached for roles without a Gumroad link (e.g. School) — see init(). */
     const cfg   = ROLE_CONFIG[role];
-    const price = cfg.pro[period];
+    const price = cfg.pro.monthly;
     const user  = JSON.parse(localStorage.getItem('atlas_user') || '{}');
     user.plan      = 'pro';
-    user.billing   = period;
+    user.billing   = 'monthly';
     user.planPrice = price;
     user.planRole  = role;
     localStorage.setItem('atlas_user', JSON.stringify(user));
